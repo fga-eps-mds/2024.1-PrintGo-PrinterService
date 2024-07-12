@@ -1,11 +1,14 @@
 name: Análise de Código
 on:
+  workflow_dispatch:
   push:
     branches:
+      - dev
       - main
   pull_request:
-  
+    # types: [opened, synchronize, reopened]
     branches:
+      - dev
       - main
 
 jobs:
@@ -25,8 +28,6 @@ jobs:
 
       - name: Executa testes e gera cobertura
         run: yarn test:all
-        env:
-          DATABASE_URL: ${{secrets.DATABASE_URL_DEV}}
 
       - name: Executa SonarCloud Scan
         if: ${{ always() }}
