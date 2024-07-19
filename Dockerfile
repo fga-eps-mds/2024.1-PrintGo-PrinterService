@@ -11,4 +11,5 @@ COPY . .
 
 EXPOSE $PORT
 
+# RUN npx prisma migrate dev --name init
 CMD [ "yarn", "start" ]
