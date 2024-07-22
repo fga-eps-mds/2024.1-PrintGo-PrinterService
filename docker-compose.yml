@@ -6,7 +6,7 @@ services:
     restart: on-failure
     build: .
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: ${DOCKER_URL}
       NODE_ENV: development
       PORT: 8001
     volumes:
@@ -17,10 +17,25 @@ services:
       - .env
     networks:
       - printgo_network
+    depends_on:
+      - postgres-printgo
+    command: ["sh", "-c", "npx prisma db push && yarn start"]
 
-volumes:
-  printgo_database:
+  postgres-printgo:
+    image: postgres:13
+    container_name: postgres-printgo-printer
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: printgo-local
+    ports:
+      - "5446:5432"
+    networks:
+      - printgo_network
 
 networks:
-    printgo_network:
-      external: true
+  printgo_network:
+    name: printgo_network
+    driver: bridge
+    external: true
+

@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id @default(cuid())
+  email       String       @unique
+  nome        String
+  senha       String
+  documento   String
+  unidade_id  String?
+  resetPasswordToken   String?
+  resetPasswordExpires   String?
+  cargos      Cargo[]      @default([USER])
+  impressoes  Impressao[]
+  impressoras Impressora[]
+
+  @@map("users")
+}
+
+model Padrao {
+  id                       String       @id @default(cuid())
+  tipo                     String
+  marca                    String
+  modeloImpressora         String?
+  modelo                   String
+  numeroSerie              String
+  versaoFirmware           String
+  totalDigitalizacoes      String
+  totalCopiasPB            String
+  totalCopiasColoridas     String
+  totalImpressoesPb        String
+  totalImpressoesColoridas String
+  totalGeral               String
+  enderecoIp               String
+  status                   PadraoStatus @default(ATIVO)
+  tempoAtivoSistema        String
+  impressoras              Impressora[]
+  num String?
+
+  @@map("padroes")
+}
+
+model Impressora {
+  id                 String           @id @default(cuid())
+  ip                 String           @unique
+  numeroSerie        String           @unique
+  padrao_id          String
+  codigoLocadora     String?
+  locadora_id        String?
+  contadorInstalacao Int @default(0)
+  dataInstalacao     DateTime?
+  ultimoContador     Int @default(0)
+  dataUltimoContador DateTime?
+  contadorRetiradas  Int @default(0)
+  dataContadorRetirada      DateTime?
+  unidadeId          String?
+  status             ImpressoraStatus @default(ATIVO)
+  impressoes         Impressao[]
+  locadora           User?            @relation(fields: [locadora_id], references: [id])
+  padrao             Padrao           @relation(fields: [padrao_id], references: [id])
+  contadores         Contador[]
+  @@map("impressoras")
+}
+
+model Impressao {
+  id             String     @id @default(cuid())
+  impressora_id  String
+  user_id        String
+  data_impressao DateTime   @default(now())
+  nome_documento String
+  numero_paginas Int
+  impressora     Impressora @relation(fields: [impressora_id], references: [id])
+  user           User       @relation(fields: [user_id], references: [id])
+
+  @@map("impressoes")
+}
+
+model Contador {
+  id                        String    @id @default(cuid())
+  numeroSerie               String
+  contadorCopiasPB          String
+  contadorImpressoesPB      String
+  contadorCopiasColoridas   String?
+  contadorImpressoesColoridas String?
+  contadorGeral             String
+  dataHoraEmissaoRelatorio  DateTime
+  pdfAnexo                  String?
+  serie                     Impressora @relation(fields: [numeroSerie], references: [numeroSerie])
+
+  @@map("contadores")
+}
+
+enum ImpressoraStatus {
+  ATIVO
+  DESATIVADO
+}
+
+enum PadraoStatus {
+  ATIVO
+  DESATIVADO
+}
+
+enum Cargo {
+  USER
+  ADMIN
+  LOCADORA
+}

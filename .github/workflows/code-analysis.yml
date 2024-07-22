@@ -3,31 +3,58 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - dev
       - main
   pull_request:
     # types: [opened, synchronize, reopened]
     branches:
-      - dev
       - main
 
 jobs:
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
+    services:
+        postgres:
+            image: postgres:latest
+            env:
+              POSTGRES_DB: testdb
+              POSTGRES_USER: testuser
+              POSTGRES_PASSWORD: testpassword
+            ports:
+              - 5444:5432
+            options: >-
+              --health-cmd="pg_isready -U testuser -d testdb"
+              --health-interval=10s
+              --health-timeout=5s
+              --health-retries=5
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
+          node-version: '20.x'
+      - name: Install Yarn
+        run: npm install -g yarn
 
       - name: Instala dependências
-        run: yarn
+        run: yarn install
+
+      - name: Roda Migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://testuser:testpassword@localhost:5444/testdb
 
       - name: Executa linter
         run: yarn lint
 
       - name: Executa testes e gera cobertura
         run: yarn test:all
+        env:
+          DATABASE_URL: postgresql://testuser:testpassword@localhost:5444/testdb
+          SMPT_HOST: ${{secrets.SMPT_HOST}}
+          SMPT_PORT: ${{secrets.SMPT_PORT}}
+          SMPT_MAIL: ${{secrets.SMPT_MAIL}}
+          SMPT_PASSWORD: ${{secrets.SMPT_PASSWORD}}
 
       - name: Executa SonarCloud Scan
         if: ${{ always() }}

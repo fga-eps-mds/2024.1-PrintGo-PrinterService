@@ -23,6 +23,7 @@
     "homepage": "https://github.com/fga-eps-mds/2023.2-PrintGo-PrinterService#readme",
     "dependencies": {
         "@fernandes-natanael/printgo-prisma": "^1.0.21",
+        "@prisma/client": "^5.17.0",
         "bcryptjs": "^2.4.3",
         "cors": "^2.8.5",
         "dotenv": "^16.3.1",
@@ -45,7 +46,7 @@
         "jest-sonar": "^0.2.16",
         "jest-sonar-reporter": "^2.0.0",
         "nodemon": "^3.0.1",
-        "prisma": "^5.5.2",
+        "prisma": "^5.17.0",
         "supertest": "^6.3.3",
         "ts-jest": "^29.1.1",
         "ts-node": "^10.9.1",
