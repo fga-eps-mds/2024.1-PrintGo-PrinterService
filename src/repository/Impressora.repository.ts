@@ -3,6 +3,15 @@ import { Impressora } from '../types/Impressora.type'
 
 const impressoraClient = new PrismaClient().impressora;
 
+export const listImpressoras = async (): Promise<Impressora[] | false> => {
+    try{
+        const impressoras = await impressoraClient.findMany();
+        return impressoras;
+    } catch (error) {
+        console.error("Erro ao procurar impressoras: ", error);
+        return false;
+    }
+}
 
 export const findImpressora = async (numSerie: string): Promise<Impressora | false> => {
     try {

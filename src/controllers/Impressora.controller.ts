@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Impressora, Status } from '../types/Impressora.type'
-import { createImpressora, findImpressora } from '../repository/Impressora.repository'
+import { createImpressora, findImpressora, listImpressoras } from '../repository/Impressora.repository'
 import { createImpressoraValidator as createValidator } from './validator/Impressora.validator';
 
 export default {
@@ -46,21 +46,27 @@ export default {
         }
     },
 
-    // async listImpressoras(request: Request, response: Response) {
-    //     try {
-    //         const impressoras = await prisma.impressora.findMany({
-    //             include: {
-    //                 padrao: true,
-    //             },
-    //         });
-    //         return response.json(impressoras);
-    //     } catch (error) {
-    //         return response.status(500).json({
-    //             error: true,
-    //             message: 'Erro: Ocorreu um erro ao buscar as Impressoras Cadastradas.'
-    //         });
-    //     }
-    // },
+    async listImpressoras(request: Request, response: Response) {
+        try {
+            let result = await listImpressoras()
+            if (!result) {
+                return response.status(500).json({
+                    message: 'Erro: Não foi possível listar impressoras.',
+                });
+            }
+
+            return response.status(201).json({
+                message: 'Sucesso: Impressoras listadas com sucesso!',
+                data: result
+            });
+
+        } catch (error) {
+            return response.status(500).json({
+                error: true,
+                message: 'Erro: Ocorreu um erro ao listar as impressoras.'
+            });
+        }
+    },
     //
     // async editImpressora(request: Request, response: Response) {
     //     try {
