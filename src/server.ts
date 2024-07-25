@@ -1,7 +1,7 @@
 import Express from 'express';
 import cors from 'cors';
-import impressoraRoutes from './routes/printer.route'
-import padraoRoutes from './routes/padrao.route';
+import impressoraRoutes from './routes/impressora.route'
+// import padraoRoutes from './routes/padrao.route';
 
 const corsOptions = {
     origin: '*',
@@ -16,8 +16,8 @@ const PORT = process.env.PORT || 8001;
 
 app.use(cors(corsOptions));
 
-app.use('/impressora', impressoraRoutes);
-app.use('/padrao', padraoRoutes)
+app.use('/printer', impressoraRoutes);
+// app.use('/padrao', padraoRoutes)
 
 const server = app.listen(PORT, () => {
     console.log(`Server is running ${PORT}`);
