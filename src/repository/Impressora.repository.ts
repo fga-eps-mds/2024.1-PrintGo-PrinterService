@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { Impressora } from '../types/Impressora.type'
+import { Impressora, Status } from '../types/Impressora.type'
 
 const impressoraClient = new PrismaClient().impressora;
 
@@ -66,6 +66,44 @@ export const createImpressora = async (impressoraDTO: Impressora): Promise<Impre
         console.error("Erro ao criar impressora:", error);
         return false
     }
+}
+
+export const updateImpressora = async (numSerie: string, impressoraDTO: Partial<Impressora>): Promise<Impressora | false> => {
+    try {
+        const impressora = await impressoraClient.update({
+            where: { numSerie },
+            data: impressoraDTO,
+        });
+
+        return impressora;
+    } catch (error) {
+        console.error("Erro ao atualizar impressora:", error);
+        return false;
+    }
 };
 
+// export const deleteImpressora = async (numSerie: string): Promise<boolean> => {
+//     try {
+//         await impressoraClient.delete({
+//             where: { numSerie },
+//         });
 
+//         return true;
+//     } catch (error) {
+//         console.error("Erro ao deletar impressora:", error);
+//         return false;
+//     }
+// };
+
+export const deleteImpressora = async (numSerie: string): Promise<Impressora | false> => {
+    try {
+        const impressora = await impressoraClient.update({
+            where: { numSerie },
+            data: { status: Status.INATIVO },
+        });
+        return impressora;
+    } catch (error) {
+        console.error("Erro ao atualizar impressora:", error);
+        return false;
+    }
+};
