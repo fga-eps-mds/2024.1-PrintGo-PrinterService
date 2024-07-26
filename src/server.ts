@@ -1,5 +1,6 @@
 import Express from 'express';
 import cors from 'cors';
+import locationRoutes from './routes/location.route';
 import impressoraRoutes from './routes/printer.route'
 import padraoRoutes from './routes/padrao.route';
 
@@ -18,6 +19,7 @@ app.use(cors(corsOptions));
 
 app.use('/impressora', impressoraRoutes);
 app.use('/padrao', padraoRoutes)
+app.use('/location', locationRoutes);
 
 const server = app.listen(PORT, () => {
     console.log(`Server is running ${PORT}`);
