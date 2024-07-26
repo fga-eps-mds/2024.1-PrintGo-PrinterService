@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Modelo {
+model Padrao {
   id                    Int       @id @default(autoincrement())
   nome                  String
   marca                 String
@@ -27,5 +27,5 @@ model Modelo {
   oidCopiasCor          String
   oidTotalGeral         String
 
-  @@map("modelos")
+  @@map("padroes")
 }
