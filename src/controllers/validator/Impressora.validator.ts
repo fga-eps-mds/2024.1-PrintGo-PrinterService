@@ -45,3 +45,49 @@ export const createImpressoraValidator = Joi.object({
     regional: Joi.string().required(),
     subestacao: Joi.string().required(),
 });
+
+export const updateImpressoraValidator = Joi.object({
+    contrato: Joi.string().optional(),
+    numSerie: Joi.string().optional(),
+
+    enderecoIp: Joi.string().custom((value, helpers) => {
+        const { dentroRede } = helpers.state.ancestors[0];
+
+        // Se dentroRede é false e enderecoIp não é '0.0.0.0', define o valor como '0.0.0.0'
+        if (dentroRede === false && value !== '0.0.0.0') {
+            return '0.0.0.0';
+        }
+
+        // Se dentroRede é true, valida o enderecoIp
+        if (dentroRede === true && !Joi.string().ip().validate(value).error) {
+            return value; // Retorna o valor validado se for um IP válido
+        }
+
+        // Se dentroRede é true e enderecoIp não é válido, retorna um erro de validação
+        // if (dentroRede === true && Joi.string().ip().validate(value).error) {
+        //     return helpers.message('enderecoIp deve ser um IP válido quando dentroRede é true');
+        // }
+
+        // Caso contrário, retorna o valor como está
+        return value;
+    }),
+    dentroRede: Joi.boolean().optional(),
+
+
+    dataRetirada: Joi.date().iso()
+        .when('status', {
+            is: 'ativo',
+            then: Joi.optional(), // Torna a dataRetirada obrigatória quando status é ativo
+            otherwise: Joi.forbidden() // Não requer dataRetirada quando status não é ativo
+        }),
+    status: Joi.string().optional(),
+
+    dataInstalacao: Joi.date().iso().optional(),
+    marca: Joi.string().optional(),
+    modelo: Joi.string().optional(),
+    contadorInstalacao: Joi.number().integer().optional(),
+    contadorRetirada: Joi.number().integer().optional(),
+    cidade: Joi.string().optional(),
+    regional: Joi.string().optional(),
+    subestacao: Joi.string().optional(),
+});
