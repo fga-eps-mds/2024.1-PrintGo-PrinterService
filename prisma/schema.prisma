@@ -63,10 +63,10 @@ model Impressora {
     marca String
     modelo String
     contadorInstalacao Int
-    contadorRetirada Int
+    contadorRetirada Int?
     cidade String
     regional String
-    subestacao String
+    subestacao String?
 }
 //
 // model Impressao {
