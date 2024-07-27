@@ -23,6 +23,16 @@ export const findImpressora = async (id: number): Promise<Impressora | false> =>
     }
 };
 
+export const findImpressoraByNumSerie = async (numSerie: string): Promise<Impressora | false> => {
+    try {
+        const impressora = await impressoraClient.findUnique({ where: { numSerie } });
+        return impressora;
+    } catch (error) {
+        console.error("Erro ao procurar impressora única:", error);
+        return false;
+    }
+};
+
 export const createImpressora = async (impressoraDTO: Impressora): Promise<Impressora | false> => {
     const {
         numContrato,

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Impressora } from '../types/Impressora.type'
-import { createImpressora, findImpressora, listImpressoras, deleteImpressora, updateImpressora } from '../repository/Impressora.repository'
+import { createImpressora, findImpressora, findImpressoraByNumSerie,listImpressoras, deleteImpressora, updateImpressora } from '../repository/Impressora.repository'
 import { createImpressoraValidator as createValidator, updateImpressoraValidator as updateValidator } from './validator/Impressora.validator';
 
 export default {
@@ -13,7 +13,7 @@ export default {
         try {
             const impressora = value;
 
-            let result = await findImpressora(impressora.numSerie);
+            let result = await findImpressoraByNumSerie(impressora.numSerie);
             if (result) {
                 return response.status(409).json({
                     message: 'Erro: Impressora já existe.',
