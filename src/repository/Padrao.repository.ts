@@ -30,3 +30,16 @@ export const createPadrao  = async (padrao:Padrao): Promise<Padrao | false> =>{
         return false
     }
 }
+
+export const editPadrao = async (id: number, padrao:Padrao)=>{
+    try {
+        const updatedPadrao = await padraoClient.update({
+            where:{id:id},
+            data : {id:id,...padrao}
+        })
+        return updatedPadrao
+    } catch (error) {
+        console.error("Erro ao editar padrão de impressora", error);
+        return false
+    }
+}
