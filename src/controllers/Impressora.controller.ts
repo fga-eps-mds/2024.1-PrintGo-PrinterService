@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Impressora, Status } from '../types/Impressora.type'
+import { Impressora } from '../types/Impressora.type'
 import { createImpressora, findImpressora, listImpressoras, deleteImpressora, updateImpressora } from '../repository/Impressora.repository'
 import { createImpressoraValidator as createValidator, updateImpressoraValidator as updateValidator } from './validator/Impressora.validator';
 
@@ -11,25 +11,16 @@ export default {
         }
 
         try {
-            const { status, ...rest } = value as any;
-            const uppercaseStatus: Status = status.toUpperCase() as Status;
-            if (!Object.values(Status).includes(uppercaseStatus)) {
-                return response.status(400).json({ error: 'Status inválido.' });
-            }
+            const impressora = value;
 
-            const impressora: Impressora = {
-                ...rest,
-                status: uppercaseStatus
-            }
-
-            let result = await findImpressora(impressora.numSerie)
+            let result = await findImpressora(impressora.numSerie);
             if (result) {
                 return response.status(409).json({
                     message: 'Erro: Impressora já existe.',
                 });
             }
 
-            result = await createImpressora(impressora)
+            result = await createImpressora(impressora);
             if (!result) {
                 return response.status(500).json({
                     message: 'Erro: Não foi possível criar uma impressora.',
@@ -48,14 +39,14 @@ export default {
 
     async listImpressoras(request: Request, response: Response) {
         try {
-            let result = await listImpressoras()
+            let result = await listImpressoras();
             if (!result) {
                 return response.status(500).json({
                     message: 'Erro: Não foi possível listar impressoras.',
                 });
             }
 
-            return response.status(201).json({
+            return response.status(200).json({
                 message: 'Sucesso: Impressoras listadas com sucesso!',
                 data: result
             });
@@ -67,28 +58,22 @@ export default {
             });
         }
     },
+    
     async updateImpressora(request: Request, response: Response) {
-        const { numSerie } = request.params;
-        const { error, value } = updateValidator.validate(request.body);
-
-        if (error) {
-            return response.status(400).json({ error: error.details });
-        }
+        const { id } = request.params; // Use id as primary key
+        const data = request.body;
 
         try {
-            const { status, ...rest } = value as any;
-            const uppercaseStatus: Status = status.toUpperCase() as Status;
-
-            if (!Object.values(Status).includes(uppercaseStatus)) {
-                return response.status(400).json({ error: 'Status inválido.' });
+            // Ensure the id is a number
+            const idNumber = parseInt(id, 10);
+            if (isNaN(idNumber)) {
+                return response.status(400).json({
+                    message: 'Erro: ID inválido.',
+                });
             }
 
-            const impressora: Impressora = {
-                ...rest,
-                status: uppercaseStatus,
-            };
-
-            let result = await findImpressora(numSerie);
+            // Update impressora in the repository
+            const result = await updateImpressora(idNumber, data);
 
             if (!result) {
                 return response.status(404).json({
@@ -96,16 +81,9 @@ export default {
                 });
             }
 
-            result = await updateImpressora(numSerie, impressora);
-            if (!result) {
-                return response.status(500).json({
-                    message: 'Erro: Não foi possível atualizar a impressora.',
-                });
-            }
-
             return response.status(200).json({
                 message: 'Sucesso: Impressora atualizada com sucesso!',
-                data: impressora,
+                data: result
             });
 
         } catch (error) {
@@ -117,26 +95,35 @@ export default {
     },
 
     async deleteImpressora(request: Request, response: Response) {
-        const { numSerie } = request.params;
+        const { id } = request.params;
+
+        // Validate ID as a number
+        const idNumber = parseInt(id, 10);
+        if (isNaN(idNumber)) {
+            return response.status(400).json({
+                message: 'Erro: ID inválido.',
+            });
+        }
 
         try {
-            const exists = await findImpressora(numSerie);
-
+            // Check if the impressora exists
+            const exists = await findImpressora(idNumber);
             if (!exists) {
                 return response.status(404).json({
                     message: 'Erro: Impressora não encontrada.',
                 });
             }
 
-            const result = await deleteImpressora(numSerie);
+            // Attempt to soft delete the impressora
+            const result = await deleteImpressora(idNumber);
             if (!result) {
                 return response.status(500).json({
-                    message: 'Erro: Não foi possível atualizar o status da impressora.',
+                    message: 'Erro: Não foi possível desativar a impressora.',
                 });
             }
 
             return response.status(200).json({
-                message: 'Sucesso: Impressora marcada como inativa com sucesso!',
+                message: 'Sucesso: Impressora desativada com sucesso!',
             });
 
         } catch (error) {
