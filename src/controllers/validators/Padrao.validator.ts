@@ -1,8 +1,8 @@
 import Joi from 'joi';
 
 export const createPadraoValidator = Joi.object({
-    nome: Joi.string().required(),
     modelo: Joi.string().required(),
+    marca: Joi.string().required(),
     colorido: Joi.bool().required(),
     oidModelo: Joi.string().optional(),
     oidNumeroSerie: Joi.string().optional(),
