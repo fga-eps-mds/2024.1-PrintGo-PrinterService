@@ -1,8 +1,8 @@
 export type Padrao = {
   id: number;
   ativo: boolean;
-  nome: string;
   modelo: string;
+  marca: string;
   colorido: boolean;
   oidModelo?:  string;
   oidNumeroSerie?: string;

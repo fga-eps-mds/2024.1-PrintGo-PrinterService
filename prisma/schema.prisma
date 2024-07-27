@@ -15,7 +15,7 @@ datasource db {
 
 model Padrao {
   id                    Int     @id @default(autoincrement())
-  nome                  String
+  marca                 String
   modelo                String
   colorido              Boolean
   oidModelo             String?
@@ -28,6 +28,6 @@ model Padrao {
   oidTotalGeral         String?
   ativo                 Boolean @default(true)
 
-  @@unique([nome, modelo])
+  @@unique([marca, modelo])
   @@map("padroes")
 }
