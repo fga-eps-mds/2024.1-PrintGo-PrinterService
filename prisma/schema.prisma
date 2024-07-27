@@ -14,18 +14,20 @@ datasource db {
 }
 
 model Padrao {
-  id                    Int       @id @default(autoincrement())
+  id                    Int     @id @default(autoincrement())
   nome                  String
-  marca                 String
+  modelo                String
   colorido              Boolean
-  oidModelo             String
-  oidNumeroSerie        String
-  oidFirmware           String
-  oidTempoAtivo         String
-  oidDigitalizacoes     String
-  oidCopiasPB           String
-  oidCopiasCor          String
-  oidTotalGeral         String
+  oidModelo             String?
+  oidNumeroSerie        String?
+  oidFirmware           String?
+  oidTempoAtivo         String?
+  oidDigitalizacoes     String?
+  oidCopiasPB           String?
+  oidCopiasCor          String?
+  oidTotalGeral         String?
+  ativo                 Boolean @default(true)
 
+  @@unique([nome, modelo])
   @@map("padroes")
 }
