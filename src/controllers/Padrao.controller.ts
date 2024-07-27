@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Padrao } from '../types/Padrao.type';
-import { listPadroes, createPadrao, editPadrao, desativarPadrao } from '../repository/Padrao.repository';
+import { listPadroes, createPadrao, editPadrao, desativarPadrao, listPadroesById, togglePadrao } from '../repository/Padrao.repository';
 import { createPadraoValidator } from './validators/Padrao.validator';
 
 
@@ -24,9 +24,21 @@ export default {
             return response.status(500).send();
         }
     },
+    
     async listPadroes(request: Request, response: Response) {
         try {
             const padroes = await listPadroes();
+            return response.status(200).json(padroes);
+        }
+        catch(error){
+            return response.status(500).send();
+        }
+    },
+
+    async listPadroesById(request: Request, response: Response) {
+        try {
+            const numberID = parseInt(request.params.id as string)
+            const padroes = await listPadroesById(numberID);
             return response.status(200).json(padroes);
         }
         catch(error){
@@ -51,14 +63,28 @@ export default {
         }
 
     },
-    async deletarPadrao(request: Request, response: Response) {    
-    
-        try {
 
+    async deletarPadrao(request: Request, response: Response) {    
+        try {
             const numberID = parseInt(request.params.id as string)
             const updatePadrao = await desativarPadrao(numberID)
             return response.status(200).json(updatePadrao);
 
+        } catch (error) {
+            console.log(error)
+            return response.status(500).send();
+        }
+    },
+
+    async togglePadrao(request: Request, response: Response){
+        try {
+            const numberID = parseInt(request.params.id as string)
+            const padrao = await listPadroesById(numberID);
+            
+            if(padrao){
+                const toggledPadrao = await togglePadrao(numberID,padrao.ativo);
+                return response.status(200).json(toggledPadrao);
+            }
         } catch (error) {
             console.log(error)
             return response.status(500).send();

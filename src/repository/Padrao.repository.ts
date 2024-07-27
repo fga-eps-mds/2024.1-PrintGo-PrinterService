@@ -20,6 +20,21 @@ export const listPadroes = async (): Promise<Padrao[] | false> => {
     }
 }
 
+export const listPadroesById = async (id: number)=> {
+    try {
+        const padroes = await padraoClient.findUnique({
+            where:{
+                id:id,
+            },
+        });
+        return padroes;
+    }
+    catch (error) {
+        console.error("Erro ao buscar padrões de impressora: ", error);
+        return false;
+    }
+}
+
 export const createPadrao  = async (padrao:Padrao): Promise<Padrao | false> =>{
     try {
         const newPadrao = await padraoClient.create({data:padrao});
@@ -46,13 +61,24 @@ export const editPadrao = async (id: number, padrao:Padrao)=>{
 
 export const desativarPadrao = async (id: number) => {
     try {
-    
         return await padraoClient.update({
-            where: { id },
+            where: { id:id },
             data: { ativo: false }
         });
     } catch (error) {
         console.error("Erro ao desativar padrão:", error);
-        return null;
+        return false;
     }
 };
+
+export const togglePadrao = async(id: number, status: boolean)=>{
+    try {
+        return await padraoClient.update({
+            where: { id },
+            data: { ativo: !status }
+        });
+    } catch (error) {
+        console.error("Erro ao desativar padrão:", error);
+        return false;
+    }
+}
