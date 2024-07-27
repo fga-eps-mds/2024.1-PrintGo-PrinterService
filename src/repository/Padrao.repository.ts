@@ -43,3 +43,16 @@ export const editPadrao = async (id: number, padrao:Padrao)=>{
         return false
     }
 }
+
+export const desativarPadrao = async (id: number) => {
+    try {
+    
+        return await padraoClient.update({
+            where: { id },
+            data: { ativo: false }
+        });
+    } catch (error) {
+        console.error("Erro ao desativar padrão:", error);
+        return null;
+    }
+};

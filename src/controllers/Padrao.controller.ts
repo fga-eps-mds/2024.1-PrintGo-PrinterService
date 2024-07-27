@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Padrao } from '../types/Padrao.type';
-import { listPadroes, createPadrao, editPadrao } from '../repository/Padrao.repository';
+import { listPadroes, createPadrao, editPadrao, desativarPadrao } from '../repository/Padrao.repository';
 import { createPadraoValidator } from './validators/Padrao.validator';
 
 
@@ -34,16 +34,14 @@ export default {
         }
     },
 
-    async updatePadrao(resquest: Request, response: Response){
-        const { error, value } = createPadraoValidator.validate(resquest.body);
+    async updatePadrao(request: Request, response: Response){
+        const { error, value } = createPadraoValidator.validate(request.body);
         if (error) {
             return response.status(400).json({error: error.message});
         }
         try {
 
-            const numberID = parseInt(resquest.params.id as string)
-            console.log(numberID)
-            console.log(resquest.params.id)
+            const numberID = parseInt(request.params.id as string)
             const updatePadrao = await editPadrao(numberID, value as Padrao)
             return response.status(200).json(updatePadrao);
 
@@ -52,6 +50,18 @@ export default {
             return response.status(500).send();
         }
 
-    }
+    },
+    async deletarPadrao(request: Request, response: Response) {    
+    
+        try {
 
+            const numberID = parseInt(request.params.id as string)
+            const updatePadrao = await desativarPadrao(numberID)
+            return response.status(200).json(updatePadrao);
+
+        } catch (error) {
+            console.log(error)
+            return response.status(500).send();
+        }
+    }
 }
