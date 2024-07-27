@@ -20,7 +20,7 @@ export const listPadroes = async (): Promise<Padrao[] | false> => {
     }
 }
 
-export const listPadroesById = async (id: number)=> {
+export const getById = async (id: number)=> {
     try {
         const padroes = await padraoClient.findUnique({
             where:{

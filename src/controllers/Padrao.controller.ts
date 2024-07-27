@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Padrao } from '../types/Padrao.type';
-import { listPadroes, createPadrao, editPadrao, desativarPadrao, listPadroesById, togglePadrao } from '../repository/Padrao.repository';
+import { listPadroes, createPadrao, editPadrao, desativarPadrao, getById, togglePadrao } from '../repository/Padrao.repository';
 import { createPadraoValidator } from './validators/Padrao.validator';
 
 
@@ -35,10 +35,10 @@ export default {
         }
     },
 
-    async listPadroesById(request: Request, response: Response) {
+    async retrievePadrao(request: Request, response: Response) {
         try {
             const numberID = parseInt(request.params.id as string)
-            const padroes = await listPadroesById(numberID);
+            const padroes = await getById(numberID);
             return response.status(200).json(padroes);
         }
         catch(error){
@@ -79,7 +79,7 @@ export default {
     async togglePadrao(request: Request, response: Response){
         try {
             const numberID = parseInt(request.params.id as string)
-            const padrao = await listPadroesById(numberID);
+            const padrao = await getById(numberID);
             
             if(padrao){
                 const toggledPadrao = await togglePadrao(numberID,padrao.ativo);
