@@ -29,7 +29,7 @@ export default {
 
             return response.status(201).json({
                 message: 'Sucesso: Impressora cadastrada com sucesso!',
-                data: impressora
+                data: result
             });
 
         } catch (error) {

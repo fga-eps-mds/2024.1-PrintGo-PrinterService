@@ -12,7 +12,7 @@ export default {
         } catch (error) {
             return response.status(500).json({
                 error: true,
-                message: 'Erro: Ocorreu um erro ao listar as impressoras.'
+                message: 'Erro: Ocorreu um erro ao listar as localizações.'
             });
         }
     },
