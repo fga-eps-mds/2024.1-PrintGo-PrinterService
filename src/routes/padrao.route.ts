@@ -9,6 +9,6 @@ padraoRoutes.get('/:id', requestHandler(PadraoController.retrievePadrao)); //Ret
 padraoRoutes.put('/:id', requestHandler(PadraoController.updatePadrao)); //Update
 padraoRoutes.patch('/desativar/:id', requestHandler(PadraoController.deletarPadrao)); //"Delete"
 padraoRoutes.patch('/toggle/:id', requestHandler(PadraoController.togglePadrao)); //toggle => ativo = !ativo
-// padraoRoutes.delete('/:id', requestHandler(PadraoController.deletePadraoById));
+padraoRoutes.delete('/:id', requestHandler(PadraoController.deletarPadrao));
 
 export default padraoRoutes;
