@@ -17,7 +17,7 @@ model Impressora {
     id Int @id @default(autoincrement())
     numContrato String
     numSerie String @unique
-    enderecoIp String @unique
+    enderecoIp String
     estaNaRede Boolean
     dataInstalacao DateTime
     dataRetirada DateTime?
