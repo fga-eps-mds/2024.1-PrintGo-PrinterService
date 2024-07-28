@@ -40,7 +40,7 @@ jobs:
         run: yarn install
 
       - name: Roda Migrations
-        run: npx prisma migrate deploy
+        run: npx prisma db push
         env:
           DATABASE_URL: postgresql://testuser:testpassword@localhost:5444/testdb
 
