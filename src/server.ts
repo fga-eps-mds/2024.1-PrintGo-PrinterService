@@ -3,7 +3,6 @@ import cors from 'cors';
 import locationRoutes from './routes/location.route';
 // import padraoRoutes from './routes/padrao.route';
 import impressoraRoutes from './routes/impressora.route'
-// import padraoRoutes from './routes/padrao.route';
 
 
 const corsOptions = {
