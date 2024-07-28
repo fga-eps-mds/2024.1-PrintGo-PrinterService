@@ -58,6 +58,9 @@ export default {
 
             const numberID = parseInt(request.params.id as string)
             const updatePadrao = await editPadrao(numberID, value as Padrao)
+            if (!updatePadrao) {
+                return response.status(404).json({ error: "Padrão não encontrado" });
+            }
             return response.status(200).json(updatePadrao);
 
         } catch (error) {
@@ -70,8 +73,12 @@ export default {
     async deletarPadrao(request: Request, response: Response) {    
         try {
             const numberID = parseInt(request.params.id as string)
-            const updatePadrao = await desativarPadrao(numberID)
-            return response.status(200).json(updatePadrao);
+            const deletePadrao = await desativarPadrao(numberID)
+            if (!deletePadrao) {
+                return response.status(404).json({ error: "Padrão não encontrado" });
+            }
+
+            return response.status(204).json(deletePadrao);
 
         } catch (error) {
             console.log(error)
