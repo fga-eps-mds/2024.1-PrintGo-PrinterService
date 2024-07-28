@@ -39,6 +39,9 @@ export default {
         try {
             const numberID = parseInt(request.params.id as string)
             const padroes = await getById(numberID);
+            if (!padroes){ 
+                return response.status(404).json({error: "Padrão não encontrado"});
+            }                   
             return response.status(200).json(padroes);
         }
         catch(error){

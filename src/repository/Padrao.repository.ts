@@ -6,11 +6,19 @@ const padraoClient = new PrismaClient().padrao;
 export const listPadroes = async (): Promise<Padrao[] | false> => {
     try {
         const padroes = await padraoClient.findMany({select: {
-            id: true,
-            ativo: true,
-            modelo: true,
-            marca: true,
-            colorido: true
+            id: true,                 
+            marca: true,                
+            modelo: true,               
+            colorido: true,              
+            oidModelo: true,             
+            oidNumeroSerie: true,        
+            oidFirmware: true,           
+            oidTempoAtivo: true,         
+            oidDigitalizacoes: true,     
+            oidCopiasPB: true,           
+            oidCopiasCor: true,          
+            oidTotalGeral: true,
+            ativo: true        
         }});
         return padroes;
     }
@@ -22,12 +30,12 @@ export const listPadroes = async (): Promise<Padrao[] | false> => {
 
 export const getById = async (id: number)=> {
     try {
-        const padroes = await padraoClient.findUnique({
+        const padroes = await padraoClient.findMany({
             where:{
                 id:id,
             },
         });
-        return padroes;
+        return padroes.length > 0 ? padroes[0] : false;
     }
     catch (error) {
         console.error("Erro ao buscar padrões de impressora: ", error);
