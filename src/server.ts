@@ -1,7 +1,8 @@
 import Express from 'express';
 import cors from 'cors';
+
+import impressoraRoutes from './routes/impressora.route'
 import locationRoutes from './routes/location.route';
-import impressoraRoutes from './routes/printer.route'
 import padraoRoutes from './routes/padrao.route';
 
 const corsOptions = {
@@ -17,7 +18,7 @@ const PORT = process.env.PORT || 8001;
 
 app.use(cors(corsOptions));
 
-app.use('/impressora', impressoraRoutes);
+app.use('/printer', impressoraRoutes);
 app.use('/padrao', padraoRoutes)
 app.use('/location', locationRoutes);
 
