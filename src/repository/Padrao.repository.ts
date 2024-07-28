@@ -8,7 +8,8 @@ export const listPadroes = async (): Promise<Padrao[] | false> => {
         const padroes = await padraoClient.findMany({select: {
             id: true,                 
             marca: true,                
-            modelo: true,               
+            modelo: true,
+            tipo:   true,               
             colorido: true,              
             oidModelo: true,             
             oidNumeroSerie: true,        

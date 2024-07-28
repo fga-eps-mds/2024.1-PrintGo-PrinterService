@@ -3,6 +3,7 @@ export type Padrao = {
   ativo: boolean;
   modelo: string;
   marca: string;
+  tipo: string;
   colorido: boolean;
   oidModelo?:  string;
   oidNumeroSerie?: string;
