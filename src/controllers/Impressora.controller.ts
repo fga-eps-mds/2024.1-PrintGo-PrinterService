@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { Impressora, Status } from '../types/Impressora.type'
-import { createImpressora, findImpressora, listImpressoras } from '../repository/Impressora.repository'
-import { createImpressoraValidator as createValidator } from './validator/Impressora.validator';
+import { Impressora } from '../types/Impressora.type'
+import { createImpressora, findImpressora, findImpressoraByNumSerie,listImpressoras, deleteImpressora, updateImpressora } from '../repository/Impressora.repository'
+import { createImpressoraValidator as createValidator, updateImpressoraValidator as updateValidator } from './validator/Impressora.validator';
 
 export default {
     async createImpressora(request: Request, response: Response) {
@@ -11,25 +11,16 @@ export default {
         }
 
         try {
-            const { status, ...rest } = value as any;
-            const uppercaseStatus: Status = status.toUpperCase() as Status;
-            if (!Object.values(Status).includes(uppercaseStatus)) {
-                return response.status(400).json({ error: 'Status inválido.' });
-            }
+            const impressora = value;
 
-            const impressora: Impressora = {
-                ...rest,
-                status: uppercaseStatus
-            }
-
-            let result = await findImpressora(impressora.numSerie)
+            let result = await findImpressoraByNumSerie(impressora.numSerie);
             if (result) {
                 return response.status(409).json({
                     message: 'Erro: Impressora já existe.',
                 });
             }
 
-            result = await createImpressora(impressora)
+            result = await createImpressora(impressora);
             if (!result) {
                 return response.status(500).json({
                     message: 'Erro: Não foi possível criar uma impressora.',
@@ -48,14 +39,14 @@ export default {
 
     async listImpressoras(request: Request, response: Response) {
         try {
-            let result = await listImpressoras()
+            let result = await listImpressoras();
             if (!result) {
                 return response.status(500).json({
                     message: 'Erro: Não foi possível listar impressoras.',
                 });
             }
 
-            return response.status(201).json({
+            return response.status(200).json({
                 message: 'Sucesso: Impressoras listadas com sucesso!',
                 data: result
             });
@@ -67,102 +58,79 @@ export default {
             });
         }
     },
-    //
-    // async editImpressora(request: Request, response: Response) {
-    //     try {
-    //         const { id } = request.params;
-    //         const impressoraToChange = request.body as ImpressoraUpdateInput;
-    //
-    //         const impressoraExist = await prisma.impressora.findUnique({ where: { id: String(id) } });
-    //
-    //         if (!impressoraExist) {
-    //             return response.status(404).json({
-    //                 error: true,
-    //                 message: 'Erro: Impressora não encontrada!',
-    //             });
-    //         }
-    //
-    //         const padraoExist = await prisma.padrao.findUnique({ where: { id: impressoraToChange.padrao_id } });
-    //         if (!padraoExist) {
-    //             return response.status(404).json({
-    //                 error: true,
-    //                 message: 'Erro: Padrao não encontrado!'
-    //             });
-    //         }
-    //
-    //         const updatedImpressora = await prisma.impressora.update({
-    //             where: {
-    //                 id: String(id)
-    //             },
-    //             data: impressoraToChange
-    //         });
-    //
-    //         return response.status(200).json({
-    //             message: 'Sucesso: Impressora atualizada com sucesso!',
-    //             data: updatedImpressora
-    //         });
-    //
-    //     } catch (error) {
-    //         return response.json({ error: true, message: error.message });
-    //     }
-    // },
-    //
-    // async toggleImpressora(request: Request, response: Response) {
-    //     try {
-    //         const { id, status } = request.body;
-    //
-    //         const toggleStatus = status === 'ATIVO' ? 'DESATIVADO' : 'ATIVO';
-    //
-    //         const impressoraExist = await prisma.impressora.findUnique({ where: { id } });
-    //
-    //         if (!impressoraExist) {
-    //             return response.status(404).json({
-    //                 error: true,
-    //                 message: 'Erro: Impressora não encontrada!',
-    //             });
-    //         }
-    //
-    //         const toggleImpre = await prisma.impressora.update({
-    //             where: { id },
-    //             data: { status: toggleStatus },
-    //         });
-    //
-    //         return response.status(200).json({
-    //             message: 'Sucesso: Impressora atualizada com sucesso!',
-    //             data: toggleImpre,
-    //         });
-    //
-    //     } catch (error) {
-    //         return response.status(500).json({ error: true, message: error.message });
-    //     }
-    // },
-    //
-    // async deleteImpressoraById(request: Request, response: Response) {
-    //     const { id } = request.params;
-    //
-    //     try {
-    //
-    //         const printerExists = await prisma.impressora.findUnique({ where: { id } });
-    //
-    //         if (!printerExists) {
-    //             return response.status(404).json({
-    //                 error: true,
-    //                 message: 'Erro: Não foi possível encontrar a impressora.',
-    //             });
-    //         }
-    //
-    //         return response.status(200).json({
-    //             message: "Sucesso: impressora deletada com sucesso.",
-    //             data: await prisma.impressora.delete({
-    //                 where: { id },
-    //             }),
-    //         });
-    //
-    //     } catch (error) {
-    //         response.status(500).json({
-    //             error: true,
-    //             message: 'Erro: Ocorreu um erro ao apagar a impressora.'
-    //         });
-    //     }
-    // },
+    
+    async updateImpressora(request: Request, response: Response) {
+        const { id } = request.params; // Use id as primary key
+        const data = request.body;
+
+        try {
+            // Ensure the id is a number
+            const idNumber = parseInt(id, 10);
+            if (isNaN(idNumber)) {
+                return response.status(400).json({
+                    message: 'Erro: ID inválido.',
+                });
+            }
+
+            // Update impressora in the repository
+            const result = await updateImpressora(idNumber, data);
+
+            if (!result) {
+                return response.status(404).json({
+                    message: 'Erro: Impressora não encontrada.',
+                });
+            }
+
+            return response.status(200).json({
+                message: 'Sucesso: Impressora atualizada com sucesso!',
+                data: result
+            });
+
+        } catch (error) {
+            return response.status(500).json({
+                error: true,
+                message: error.message,
+            });
+        }
+    },
+
+    async deleteImpressora(request: Request, response: Response) {
+        const { id } = request.params;
+
+        // Validate ID as a number
+        const idNumber = parseInt(id, 10);
+        if (isNaN(idNumber)) {
+            return response.status(400).json({
+                message: 'Erro: ID inválido.',
+            });
+        }
+
+        try {
+            // Check if the impressora exists
+            const exists = await findImpressora(idNumber);
+            if (!exists) {
+                return response.status(404).json({
+                    message: 'Erro: Impressora não encontrada.',
+                });
+            }
+
+            // Attempt to soft delete the impressora
+            const result = await deleteImpressora(idNumber);
+            if (!result) {
+                return response.status(500).json({
+                    message: 'Erro: Não foi possível desativar a impressora.',
+                });
+            }
+
+            return response.status(200).json({
+                message: 'Sucesso: Impressora desativada com sucesso!',
+            });
+
+        } catch (error) {
+            return response.status(500).json({
+                error: true,
+                message: error.message,
+            });
+        }
+    },
 };
