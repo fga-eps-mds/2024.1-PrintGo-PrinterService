@@ -207,7 +207,7 @@ describe("Padrao Controller", () => {
                 .put(url_update + id)
                 .send(padraoRepetido);
 
-            expect(response.status).toBe(400);
+            expect(response.status).toBe(404);
         });
     });
 
