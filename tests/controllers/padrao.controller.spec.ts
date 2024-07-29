@@ -18,6 +18,7 @@ describe("Padrao Controller", () => {
         modelo: "Imprime Baixo 3000",
         marca: "Epston",
         colorido: false,
+        tipo: "Multifuncional laser colorido",
         oidModelo: "1.3.6.1.2.1.1.1.0",
         oidNumeroSerie: "1.3.6.1.2.1.43.5.1.1.17.1",
         oidFirmware: "1.3.6.1.2.1.43.5.1.1.16.1",
