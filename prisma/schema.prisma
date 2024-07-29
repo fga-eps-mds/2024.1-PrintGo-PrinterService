@@ -31,6 +31,8 @@ model Padrao {
 
   @@unique([marca, modelo])
   @@map("padroes")
+}
+
 model Impressora {
     id Int @id @default(autoincrement())
     numContrato String
