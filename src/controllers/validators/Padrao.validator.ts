@@ -5,12 +5,12 @@ export const createPadraoValidator = Joi.object({
     marca: Joi.string().required(),
     tipo: Joi.string().required(),
     colorido: Joi.bool().required(),
-    oidModelo: Joi.string().optional(),
-    oidNumeroSerie: Joi.string().optional(),
-    oidFirmware:  Joi.string().optional(),
-    oidTempoAtivo:  Joi.string().optional(),
-    oidDigitalizacoes:  Joi.string().optional(),
-    oidCopiasPB:  Joi.string().optional(),
-    oidCopiasCor: Joi.string().optional(),
-    oidTotalGeral:  Joi.string().optional()
+    oidModelo: Joi.string().allow(null).optional(),
+    oidNumeroSerie: Joi.string().allow(null).optional(),
+    oidFirmware:  Joi.string().allow(null).optional(),
+    oidTempoAtivo:  Joi.string().allow(null).optional(),
+    oidDigitalizacoes:  Joi.string().allow(null).optional(),
+    oidCopiasPB:  Joi.string().allow(null).optional(),
+    oidCopiasCor: Joi.string().allow(null).optional(),
+    oidTotalGeral:  Joi.string().allow(null).optional()
 });
