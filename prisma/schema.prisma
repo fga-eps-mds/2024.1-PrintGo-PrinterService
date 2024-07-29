@@ -13,6 +13,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Padrao {
+  id                    Int     @id @default(autoincrement())
+  marca                 String
+  modelo                String
+  tipo                  String
+  colorido              Boolean
+  oidModelo             String?
+  oidNumeroSerie        String?
+  oidFirmware           String?
+  oidTempoAtivo         String?
+  oidDigitalizacoes     String?
+  oidCopiasPB           String?
+  oidCopiasCor          String?
+  oidTotalGeral         String?
+  ativo                 Boolean @default(true)
+
+  @@unique([marca, modelo])
+  @@map("padroes")
+}
+
 model Impressora {
     id Int @id @default(autoincrement())
     numContrato String
