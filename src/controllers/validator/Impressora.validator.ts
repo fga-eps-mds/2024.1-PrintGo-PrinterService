@@ -20,11 +20,11 @@ export const createImpressoraValidator = Joi.object({
     }),
     estaNaRede: Joi.boolean().required(),
     dataInstalacao: Joi.date().iso().required(),
-    dataRetirada: Joi.date().allow(null).iso().optional()
+    dataRetirada: Joi.date().iso()
         .when('ativo', {
-            is: false,
-            then: Joi.required(), // Torna a dataRetirada obrigatória quando status é inativo
-            otherwise: Joi.forbidden() // Não requer dataRetirada quando status não é inativo
+            is: true,
+            then: Joi.optional().allow(null), // Torna a dataRetirada obrigatória quando status é ativo
+            otherwise: Joi.required() // Não requer dataRetirada quando status não é ativo
         }),
     ativo: Joi.boolean().required(),
     contadorInstalacaoPB: Joi.number().integer().required(),
@@ -46,34 +46,28 @@ export const createImpressoraValidator = Joi.object({
 export const updateImpressoraValidator = Joi.object({
     numContrato: Joi.string().optional(),
     numSerie: Joi.string().optional(),
-    enderecoIp: Joi.string().custom((value, helpers) => {
+    enderecoIp: Joi.custom((value, helpers) => {
         const { estaNaRede } = helpers.state.ancestors[0];
 
-        // Se estaNaRede é false e enderecoIp não é '0.0.0.0', define o valor como '0.0.0.0'
-        if (estaNaRede === false && value !== '0.0.0.0') {
+        if (estaNaRede === false) {
             return '0.0.0.0';
         }
 
-        // Se estaNaRede é true, valida o enderecoIp
         if (estaNaRede === true && !Joi.string().ip().validate(value).error) {
-            return value; // Retorna o valor validado se for um IP válido
+            return value;
         }
 
-        // Se estaNaRede é true e enderecoIp não é válido, retorna um erro de validação
-        // if (estaNaRede === true && Joi.string().ip().validate(value).error) {
-        //     return helpers.message('enderecoIp deve ser um IP válido quando estaNaRede é true');
-        // }
-
-        // Caso contrário, retorna o valor como está
-        return value;
+        if (estaNaRede === true && Joi.string().ip().validate(value).error) {
+            return helpers.message({'string.ip': 'enderecoIp deve ser um IP válido quando dentroRede é true'});
+        }
     }),
     estaNaRede: Joi.boolean().optional(),
     dataInstalacao: Joi.date().iso().optional(),
-    dataRetirada: Joi.date().allow(null).iso().optional()
+    dataRetirada: Joi.date().iso()
         .when('ativo', {
             is: true,
-            then: Joi.optional(), // Torna a dataRetirada obrigatória quando status é ativo
-            otherwise: Joi.forbidden() // Não requer dataRetirada quando status não é ativo
+            then: Joi.optional().allow(null), // Torna a dataRetirada obrigatória quando status é ativo
+            otherwise: Joi.required() // Não requer dataRetirada quando status não é ativo
         }),
     ativo: Joi.boolean().optional(),
     contadorInstalacaoPB: Joi.number().integer().optional(),
