@@ -17,9 +17,9 @@ const PORT = process.env.PORT || 8001;
 
 app.use(cors(corsOptions));
 
-app.use('/printer', impressoraRoutes);
+app.use('/', impressoraRoutes);
+app.use('/padrao', padraoRoutes)
 app.use('/location', locationRoutes);
-// app.use('/padrao', padraoRoutes)
 
 const server = app.listen(PORT, () => {
     console.log(`Server is running ${PORT}`);
