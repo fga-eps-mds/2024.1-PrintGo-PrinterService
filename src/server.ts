@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 8001;
 
 app.use(cors(corsOptions));
 
-app.use('/printer', impressoraRoutes);
+app.use('/', impressoraRoutes);
 app.use('/location', locationRoutes);
 // app.use('/padrao', padraoRoutes)
 
