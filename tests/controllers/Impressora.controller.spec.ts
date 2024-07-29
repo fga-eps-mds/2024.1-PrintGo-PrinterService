@@ -178,5 +178,25 @@ describe('Impressora Controller', () => {
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('Erro: ID inválido.');
     });
+
+    it('should return the impressora when a valid id is provided', async () => {
+        const response = await request(server).get(`/printer/${impressoraId}`);
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('id', impressoraId);
+        expect(response.body).toHaveProperty('numContrato', '12345');
+    });
+
+    it('should return 404 when the impressora is not found', async () => {
+        const nonExistentId = 9999;
+        const response = await request(server).get(`/printer/${nonExistentId}`);
+        expect(response.status).toBe(404);
+        expect(response.body.message).toBe('Erro: Impressora não encontrada.');
+    });
+
+    it('should return 400 for an invalid id', async () => {
+        const response = await request(server).get('/printer/invalidId');
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe('Erro: ID inválido.');
+    });
 });
 
