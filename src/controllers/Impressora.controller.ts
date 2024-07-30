@@ -29,7 +29,7 @@ export default {
 
             return response.status(201).json({
                 message: 'Sucesso: Impressora cadastrada com sucesso!',
-                data: impressora
+                data: result
             });
 
         } catch (error) {
@@ -60,11 +60,14 @@ export default {
     },
     
     async updateImpressora(request: Request, response: Response) {
-        const { id } = request.params; // Use id as primary key
-        const data = request.body;
-
+        const { error, value } = updateValidator.validate(request.body);
+        if (error) {
+            return response.status(400).json({ error: error.details });
+        }
+        
+        const { id } = request.params;
+        
         try {
-            // Ensure the id is a number
             const idNumber = parseInt(id, 10);
             if (isNaN(idNumber)) {
                 return response.status(400).json({
@@ -72,8 +75,7 @@ export default {
                 });
             }
 
-            // Update impressora in the repository
-            const result = await updateImpressora(idNumber, data);
+            const result = await updateImpressora(idNumber, value);
 
             if (!result) {
                 return response.status(404).json({
@@ -125,6 +127,34 @@ export default {
             return response.status(200).json({
                 message: 'Sucesso: Impressora desativada com sucesso!',
             });
+
+        } catch (error) {
+            return response.status(500).json({
+                error: true,
+                message: error.message,
+            });
+        }
+    },
+
+    async getImpressora(request: Request, response: Response) {
+        const { id } = request.params;
+
+        const idNumber = parseInt(id, 10);
+        if (isNaN(idNumber)) {
+            return response.status(400).json({
+                message: 'Erro: ID inválido.',
+            });
+        }
+
+        try {
+            const impressora = await findImpressora(idNumber);
+            if (!impressora) {
+                return response.status(404).json({
+                    message: 'Erro: Impressora não encontrada.',
+                });
+            }
+
+            return response.status(200).json(impressora);
 
         } catch (error) {
             return response.status(500).json({
