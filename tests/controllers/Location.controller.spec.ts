@@ -10,6 +10,7 @@ describe('Location Controller', () => {
     it('should list all locations and return a 201 status', async () => {
         const response = await request(server)
             .get('/location');
+        console.log(response.body);
 
         expect(response.status).toBe(201);
         expect(response.body.message).toBe('Sucesso: Localizações listadas com sucesso!');

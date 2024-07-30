@@ -31,7 +31,7 @@ describe('Impressora Controller', () => {
 
     it('should create a new printer and return a 201 status', async () => {
         const response = await request(server)
-            .post('/printer')
+            .post('/')
             .send(defaultPrinter);
 
         expect(response.status).toBe(201);
@@ -44,7 +44,7 @@ describe('Impressora Controller', () => {
         let data = { defaultPrinter, ...{ test: test } }
 
         const response = await request(server)
-            .post('/printer')
+            .post('/')
             .send(data);
 
         expect(response.status).toBe(400);
@@ -62,7 +62,7 @@ describe('Impressora Controller', () => {
             });
 
         const response = await request(server)
-            .post('/printer')
+            .post('/')
             .send(defaultPrinter);
 
         expect(response.status).toBe(500);
@@ -73,7 +73,7 @@ describe('Impressora Controller', () => {
 
     it('should generate an error trying to create a printer that exists', async () => {
         const response = await request(server)
-            .post('/printer')
+            .post('/')
             .send(defaultPrinter);
 
         expect(response.status).toBe(409);
@@ -82,7 +82,7 @@ describe('Impressora Controller', () => {
 
     it('should list all printers and return a 200 status', async () => {
         const response = await request(server)
-            .get('/printer');
+            .get('/');
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('Sucesso: Impressoras listadas com sucesso!');
@@ -96,7 +96,7 @@ describe('Impressora Controller', () => {
             });
 
         const response = await request(server)
-            .get('/printer');
+            .get('/');
 
         expect(response.status).toBe(500);
         expect(response.body.message).toBe('Erro: Ocorreu um erro ao listar as impressoras.');
@@ -111,7 +111,7 @@ describe('Impressora Controller', () => {
             });
 
         const response = await request(server)
-            .get('/printer');
+            .get('/');
 
         expect(response.status).toBe(500);
         expect(response.body.error).toBe(true);
@@ -128,7 +128,7 @@ describe('Impressora Controller', () => {
         };
 
         const response = await request(server)
-            .patch(`/printer/${impressoraId}`)
+            .patch(`/${impressoraId}`)
             .send(updatedPrinter);
 
         expect(response.status).toBe(200);
@@ -139,7 +139,7 @@ describe('Impressora Controller', () => {
 
     it('should return a 400 status if the printer ID is invalid', async () => {
         const response = await request(server)
-            .patch(`/printer/invalid-id`)
+            .patch(`/invalid-id`)
             .send(defaultPrinter);
 
         expect(response.status).toBe(400);
@@ -148,7 +148,7 @@ describe('Impressora Controller', () => {
 
     it('should return a 404 status if the printer is not found', async () => {
         const response = await request(server)
-            .patch(`/printer/99999`)
+            .patch(`/99999`)
             .send(defaultPrinter);
 
         expect(response.status).toBe(404);
@@ -157,7 +157,7 @@ describe('Impressora Controller', () => {
 
     it('should delete an existing printer and return a 200 status', async () => {
         const response = await request(server)
-            .delete(`/printer/${impressoraId}`);
+            .delete(`/${impressoraId}`);
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('Sucesso: Impressora desativada com sucesso!');
@@ -165,7 +165,7 @@ describe('Impressora Controller', () => {
 
     it('should return a 404 status if the printer to delete is not found', async () => {
         const response = await request(server)
-            .delete(`/printer/99999`);
+            .delete(`/99999`);
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe('Erro: Impressora não encontrada.');
@@ -173,14 +173,14 @@ describe('Impressora Controller', () => {
 
     it('should return a 400 status if the printer ID to delete is invalid', async () => {
         const response = await request(server)
-            .delete(`/printer/invalid-id`);
+            .delete(`/invalid-id`);
 
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('Erro: ID inválido.');
     });
 
     it('should return the impressora when a valid id is provided', async () => {
-        const response = await request(server).get(`/printer/${impressoraId}`);
+        const response = await request(server).get(`/${impressoraId}`);
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('id', impressoraId);
         expect(response.body).toHaveProperty('numContrato', '12345');
@@ -188,13 +188,13 @@ describe('Impressora Controller', () => {
 
     it('should return 404 when the impressora is not found', async () => {
         const nonExistentId = 9999;
-        const response = await request(server).get(`/printer/${nonExistentId}`);
+        const response = await request(server).get(`/${nonExistentId}`);
         expect(response.status).toBe(404);
         expect(response.body.message).toBe('Erro: Impressora não encontrada.');
     });
 
     it('should return 400 for an invalid id', async () => {
-        const response = await request(server).get('/printer/invalidId');
+        const response = await request(server).get('/invalidId');
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('Erro: ID inválido.');
     });

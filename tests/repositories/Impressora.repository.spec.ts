@@ -33,7 +33,7 @@ describe('Impressora Service Integration Tests', () => {
 
     it('should list all impressoras', async () => {
         const res = await request(server)
-            .post('/printer')
+            .post('/')
             .send(defaultPrinter);
         createdPrinterId = res.body.data.id;
 
