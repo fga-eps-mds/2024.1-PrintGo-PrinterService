@@ -1,3 +1,4 @@
+
 export type Impressora = {
     id: number;
     numContrato: string;
