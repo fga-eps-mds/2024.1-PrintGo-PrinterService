@@ -1,85 +1,18 @@
-export type ImpressoraCreateInput = {
-    ip: string;
-    padrao_id: string;
-    numeroSerie: string;
-    codigoLocadora: string;
-    contadorInstalacao: number;    
+export type Impressora = {
+    id: number;
+    numContrato: string;
+    numSerie: string;
+    enderecoIp: string;
+    estaNaRede: boolean;
     dataInstalacao: Date;
-    contadorRetiradas: number;
-    dataContadorRetirada: Date;
-    ultimoContador: number;
-    dataUltimoContador: Date;
-    unidadeId?: string;
-}
-export type ImpressoraCreateOutput = {
-    id: string;
-    ip: string;
-    padrao_id: string;
-    numeroSerie: string;
-    codigoLocadora: string;
-    contadorInstalacao: number;    
-    dataInstalacao: Date;
-    contadorRetiradas: number;
-    dataContadorRetirada: Date;
-    ultimoContador: number;
-    dataUltimoContador: Date;
-    unidadeId?: string;
-}
-
-export type ImpressoraUpdateInput = {
-    ip?: string;
-    padrao_id?: string;
-    numeroSerie?: string;
-    codigoLocadora?: string;
-    contadorInstalacao?: number;    
-    dataInstalacao?: Date;
-    contadorRetiradas?: number;
-    dataContadorRetirada?: Date;
-    ultimoContador?: number;
-    dataUltimoContador?: Date;
-    unidadeId?: string;
-}
-
-export type ImpressoraUpdateOutput = {
-    id: string;
-    padrao_id: string;
-    ip: string;
-    numeroSerie: string;
-    codigoLocadora: string;
-
-    contadorInstalacao: number;    
-    dataInstalacao: Date;
-
-    contadorRetirada?: number;
-    datacontadorRetirada?: Date;
-
-    ultimoContador?: number;
-    dataUltimoContador: Date;
-    
-    unidadeId?: string;
-}
-
-export type ImpressoraToggleInput = {
-    id: string;
-    status: string;
-}
-
-export type ImpressoraToggleOutput = {
-    id: string;
-    padrao_id: string;
-    ip: string;
-    numeroSerie: string;
-    codigoLocadora: string;
-
-    contadorInstalacao: number;    
-    dataInstalacao: Date;
-
-    contadorRetirada?: number;
-    datacontadorRetirada?: Date;
-
-    ultimoContador?: number;
-    dataUltimoContador: Date;
-    
-    unidadeId?: string;
-    status: string;
-}
+    dataRetirada?: Date;
+    ativo: boolean;
+    contadorInstalacaoPB: number;
+    contadorInstalacaoCor: number;
+    contadorAtualPB: number;
+    contadorAtualCor: number;
+    contadorRetiradaPB?: number;
+    contadorRetiradaCor?: number;
+    localizacao: string;
+    modeloId: string;
+};

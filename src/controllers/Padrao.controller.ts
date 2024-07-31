@@ -1,176 +1,103 @@
 import { Request, Response } from 'express';
-import { prisma } from '../database';
-import { PadraoCreateInput, PadraoUpdateInput } from '../types/Padrao.type';
+import { Padrao } from '../types/Padrao.type';
+import { listPadroes, createPadrao, editPadrao, desativarPadrao, getById, togglePadrao } from '../repository/Padrao.repository';
+import { createPadraoValidator } from './validators/Padrao.validator';
+
 
 export default {
     async createPadrao(request: Request, response: Response) {
+        const { error, value } = createPadraoValidator.validate(request.body);
+        if (error) {
+            return response.status(400).json({error: error.message});
+        }
+
         try {
-            const {
-                tipo,
-                marca,
-                modeloImpressora,
-                modelo,
-                numeroSerie,
-                versaoFirmware,
-                totalDigitalizacoes,
-                totalCopiasPB,
-                totalCopiasColoridas,
-                totalImpressoesPb,
-                totalImpressoesColoridas,
-                totalGeral,
-                enderecoIp,
-                tempoAtivoSistema,
-            } = request.body as PadraoCreateInput;
+            const padraoBody = value as Padrao;
+            const newPadrao = await createPadrao(padraoBody);
+            if (!newPadrao.valueOf()) {
+                return response.status(400).send();
+            }
+            return response.status(201).json(newPadrao);
 
-
-            const padrao = await prisma.padrao.create({
-                data: {
-                    tipo,
-                    marca,
-                    modelo,
-                    numeroSerie,
-                    versaoFirmware,
-                    tempoAtivoSistema,
-                    totalDigitalizacoes,
-                    totalCopiasPB,
-                    totalCopiasColoridas,
-                    totalImpressoesPb,
-                    totalImpressoesColoridas,
-                    totalGeral,
-                    enderecoIp,
-                    modeloImpressora,
-                }
-            });
-
-            return response.status(201).json({
-                message: 'Sucesso: padrao cadastrada com sucesso!',
-                data: padrao
-            });
-
-        } catch (error) {
-            return response.status(500).json({ error: true, message: error.message });
+        }
+        catch (error) {
+            return response.status(500).send();
         }
     },
     
-    async editPadrao(request: Request, response: Response) {
-      try {
-        const { id } = request.params;
-        const padraoToChange = request.body as PadraoUpdateInput;
-        
-        const padraoExists = await prisma.padrao.findUnique({ where: { id: String(id) } });
-        
-        if (!padraoExists) {
-          return response.status(404).json({
-            error: true,
-            message: 'Erro: Padrão não encontrado!',
-          });
+    async listPadroes(request: Request, response: Response) {
+        try {
+            const padroes = await listPadroes();
+            return response.status(200).json(padroes);
         }
-        
-        const updatedPadrao = await prisma.padrao.update({
-          where: {
-            id: String(id)
-          },
-          data: padraoToChange,
-        });
-        
-        return response.status(200).json({
-          message: 'Sucesso: Padrão atualizado com sucesso!',
-          data: updatedPadrao,
-        });
-        
-      } catch (error) {
-        return response.json({ error: true, message: error.message });
-      }
+        catch(error){
+            return response.status(500).send();
+        }
     },
 
-    async  listPadroes(request: Request, response: Response) {
+    async retrievePadrao(request: Request, response: Response) {
         try {
-            const padroes = await prisma.padrao.findMany();
-            return response.json(padroes);
+            const numberID = parseInt(request.params.id as string)
+            const padroes = await getById(numberID);
+            if (!padroes){ 
+                return response.status(404).json({error: "Padrão não encontrado"});
+            }                   
+            return response.status(200).json(padroes);
+        }
+        catch(error){
+            return response.status(500).send();
+        }
+    },
+
+    async updatePadrao(request: Request, response: Response){
+        const { error, value } = createPadraoValidator.validate(request.body);
+        if (error) {
+            return response.status(400).json({error: error.message});
+        }
+        try {
+
+            const numberID = parseInt(request.params.id as string)
+            const updatePadrao = await editPadrao(numberID, value as Padrao)
+            if (!updatePadrao) {
+                return response.status(404).json({ error: "Padrão não encontrado" });
+            }
+            return response.status(200).json(updatePadrao);
+
         } catch (error) {
-            return response.status(500).json({
-                error: true,
-                message: 'Erro: Ocorreu um erro ao buscar as padroes Cadastradas.'
-            });
+            console.log(error)
+            return response.status(500).send();
+        }
+
+    },
+
+    async deletarPadrao(request: Request, response: Response) {    
+        try {
+            const numberID = parseInt(request.params.id as string)
+            const deletePadrao = await desativarPadrao(numberID)
+            if (!deletePadrao) {
+                return response.status(404).json({ error: "Padrão não encontrado" });
+            }
+
+            return response.status(204).json(deletePadrao);
+
+        } catch (error) {
+            console.log(error)
+            return response.status(500).send();
         }
     },
 
-    async findPadraoById(request: Request, response: Response) {
-        const { id } = request.params;
-
+    async togglePadrao(request: Request, response: Response){
         try {
-            const padrao = await prisma.padrao.findUnique({
-                where: { id: String(id) },
-            });
-
-            if(padrao) {
-                const status=200;
-                return response.status(status).json(padrao)
-            } else {
-                const status=404;
-                return response.status(status).json({
-                    error: true,
-                    message: 'Erro: Não foi possível encontrar o padrão.',
-                })
+            const numberID = parseInt(request.params.id as string)
+            const padrao = await getById(numberID);
+            
+            if(padrao){
+                const toggledPadrao = await togglePadrao(numberID,padrao.ativo);
+                return response.status(200).json(toggledPadrao);
             }
         } catch (error) {
-            return response.status(500).json({
-                error: true,
-                message: 'Erro: Ocorreu um erro ao buscar  o padrão por ID.'
-            });
+            console.log(error)
+            return response.status(500).send();
         }
-    },
-
-    async togglePadrao(request: Request, response: Response) {
-      try {
-          const { id, status } = request.body;
-  
-          const toggleStatus = status === 'ATIVO' ? 'DESATIVADO' : 'ATIVO';
-  
-          const patternExists = await prisma.padrao.findUnique({ where: { id } });
-  
-          if (!patternExists) {
-              return response.status(404).json({
-                  error: true,
-                  message: 'Erro: Padrão não encontrado!',
-              });
-          }
-  
-          return response.status(200).json({
-              message: 'Sucesso: Padrão atualizado com sucesso!',
-              data: await prisma.padrao.update({
-                where: { id },
-                data: { status: toggleStatus },
-              }),
-          });
-  
-      } catch (error) {
-          return response.status(500).json({ error: true, message: error.message });
-      }
-  },
-
-  async deletePadraoById(request: Request, response: Response) {
-    const { id } = request.params;
-
-    try {
-        const patternExists = await prisma.padrao.findUnique({ where: { id } });
-    
-        if (!patternExists) {
-            return response.status(404).json({
-                error: true,
-                message: 'Erro: Padrão não encontrado!',
-            });
-        }
-
-        return response.status(200).json({
-          message: 'Sucesso: Padrão deletado com sucesso!',
-          data: await prisma.padrao.delete({
-            where: { id },
-          }),
-        });
-
-    } catch (error) {
-        response.status(500).json({error: true, message: 'Erro: Ocorreu um erro ao apagar o padrão.'});
     }
-  },
-};
+}

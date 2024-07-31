@@ -13,37 +13,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id          String       @id @default(cuid())
-  email       String       @unique
-  nome        String
-  senha       String
-  documento   String
-  unidade_id  String?
-  resetPasswordToken   String?
-  resetPasswordExpires   String?
-  cargos      Cargo[]      @default([USER])
-  impressoes  Impressao[]
-  impressoras Impressora[]
-
-  @@map("users")
-}
-
 model Padrao {
-  id                Int     @id @default(autoincrement())
-  marca             String
-  modelo            String
-  tipo              String
-  colorido          Boolean
-  oidModelo         String?
-  oidNumeroSerie    String?
-  oidFirmware       String?
-  oidTempoAtivo     String?
-  oidDigitalizacoes String?
-  oidCopiasPB       String?
-  oidCopiasCor      String?
-  oidTotalGeral     String?
-  ativo             Boolean @default(true)
+  id                    Int     @id @default(autoincrement())
+  marca                 String
+  modelo                String
+  tipo                  String
+  colorido              Boolean
+  oidModelo             String?
+  oidNumeroSerie        String?
+  oidFirmware           String?
+  oidTempoAtivo         String?
+  oidDigitalizacoes     String?
+  oidCopiasPB           String?
+  oidCopiasCor          String?
+  oidTotalGeral         String?
+  ativo                 Boolean @default(true)
 
   @@unique([marca, modelo])
   @@map("padroes")
