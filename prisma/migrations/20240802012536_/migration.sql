@@ -1,6 +1,3 @@
--- DropIndex
-DROP INDEX "Impressora_enderecoIp_key";
-
 -- CreateTable
 CREATE TABLE "padroes" (
     "id" SERIAL NOT NULL,
@@ -22,6 +19,28 @@ CREATE TABLE "padroes" (
 );
 
 -- CreateTable
+CREATE TABLE "Impressora" (
+    "id" SERIAL NOT NULL,
+    "numContrato" TEXT NOT NULL,
+    "numSerie" TEXT NOT NULL,
+    "enderecoIp" TEXT NOT NULL,
+    "estaNaRede" BOOLEAN NOT NULL,
+    "dataInstalacao" TIMESTAMP(3) NOT NULL,
+    "dataRetirada" TIMESTAMP(3),
+    "ativo" BOOLEAN NOT NULL,
+    "contadorInstalacaoPB" INTEGER NOT NULL,
+    "contadorInstalacaoCor" INTEGER NOT NULL,
+    "contadorAtualPB" INTEGER NOT NULL,
+    "contadorAtualCor" INTEGER NOT NULL,
+    "contadorRetiradaPB" INTEGER NOT NULL,
+    "contadorRetiradaCor" INTEGER NOT NULL,
+    "localizacao" TEXT NOT NULL,
+    "modeloId" TEXT NOT NULL,
+
+    CONSTRAINT "Impressora_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Relatorio" (
     "id" SERIAL NOT NULL,
     "impressoraId" INTEGER NOT NULL,
@@ -34,6 +53,9 @@ CREATE TABLE "Relatorio" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "padroes_marca_modelo_key" ON "padroes"("marca", "modelo");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Impressora_numSerie_key" ON "Impressora"("numSerie");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Relatorio_impressoraId_key" ON "Relatorio"("impressoraId");
