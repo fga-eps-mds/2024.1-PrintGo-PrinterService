@@ -1,3 +1,4 @@
+import { Relatorio } from './Relatorio.type';
 
 export type Impressora = {
     id: number;
@@ -16,4 +17,5 @@ export type Impressora = {
     contadorRetiradaCor?: number;
     localizacao: string;
     modeloId: string;
+    relatorio?: Relatorio;
 };

@@ -57,7 +57,11 @@ model Relatorio {
   id                Int        @id @default(autoincrement())
   impressora        Impressora @relation(fields: [impressoraId], references: [id])
   impressoraId      Int        @unique
-  contadorMes       Int
+  contadorPB       Int
+  contadorPBDiff   Int
+  contadorCor       Int
+  contadorCorDiff   Int
   ultimoResultado   Int
+  resultadoAtual    Int
   ultimaAtualizacao DateTime
 }

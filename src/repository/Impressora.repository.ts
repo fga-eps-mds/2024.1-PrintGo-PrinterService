@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { Impressora } from '../types/Impressora.type'
 
 const impressoraClient = new PrismaClient().impressora;
@@ -105,8 +105,12 @@ export const createImpressora = async (impressoraDTO: Impressora): Promise<Impre
             await prisma.relatorio.create({
                 data: {
                     impressoraId: impressora.id,
-                    contadorMes: impressora.contadorAtualPB + impressora.contadorAtualCor,
+                    contadorPB: impressora.contadorAtualPB,
+                    contadorCor: impressora.contadorAtualCor,
+                    contadorPBDiff: 0,
+                    contadorCorDiff: 0,
                     ultimoResultado: 0,
+                    resultadoAtual: 0,
                     ultimaAtualizacao: new Date(),
                 },
             });
@@ -123,7 +127,7 @@ export const updateImpressora = async (id: number, data: Partial<Impressora>): P
     try {
         const updatedImpressora = await impressoraClient.update({
             where: { id: id },
-            data: data,
+            data: data as Prisma.ImpressoraUpdateInput,
         });
         return updatedImpressora;
     } catch (error) {
