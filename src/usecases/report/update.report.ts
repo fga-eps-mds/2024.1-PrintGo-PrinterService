@@ -1,73 +1,33 @@
-import { PrismaClient, Relatorio } from '@prisma/client';
+import { RelatorioData as ReportDTO } from '../../types/Relatorio.type';
+import { Impressora } from '../../types/Impressora.type';
+import { generateReport } from './generate.report';
+import { updateReport as editReport } from '../../repository/Report.repository';
 
-const prisma = new PrismaClient();
+export const updateReport = async (impressora: Impressora): Promise<void> => {
+    const { relatorio } = impressora;
 
-export const updateReport = async (): Promise<void> => {
+    if (!relatorio) {
+        console.log('Relatório não encontrado para a impressora');
+        return;
+    }
+
+    const now = new Date();
+    const lastUpdated = new Date(relatorio.ultimaAtualizacao);
+
+    const diffInMillis = now.getTime() - lastUpdated.getTime();
+    const diffInDays = diffInMillis / (1000 * 60 * 60 * 24);
+
+    if (diffInDays < 30) {
+        console.log('Não passaram 30 dias desde a última atualização.');
+        return;
+    }
+
+    const reportData: ReportDTO = generateReport(impressora);
+    console.log(reportData);
+
     try {
-        const latestReport: Relatorio | null = await prisma.relatorio.findFirst({
-            orderBy: { ultimaAtualizacao: 'desc' }
-        });
-
-        const currentCounter = await getCurrentCounter(latestReport ? latestReport.impressoraId : 1);
-
-        let shouldCreateNewReport = false;
-        let newReportData: Omit<Relatorio, 'id'>;
-
-        if (latestReport) {
-            // Verifica se passou um mês desde a última atualização
-            const lastUpdateDate = new Date(latestReport.ultimaAtualizacao);
-            const today = new Date();
-            const monthsPassed = isMonthPassed(lastUpdateDate, today);
-            
-            shouldCreateNewReport = monthsPassed;
-        } else {
-            // Se não houver relatório anterior, considere criar um novo relatório
-            shouldCreateNewReport = true;
-        }
-
-        if (shouldCreateNewReport) {
-            newReportData = {
-                impressoraId: latestReport ? latestReport.impressoraId : 1,
-                contadorMes: currentCounter,
-                ultimoResultado: currentCounter,
-                ultimaAtualizacao: new Date()
-            };
-
-            // Salva o novo relatório
-            await prisma.relatorio.create({ data: newReportData });
-
-            console.log('Relatório atualizado com sucesso:', newReportData);
-        } else {
-            console.log('Ainda não se passou um mês desde o último relatório. Nenhuma atualização de relatório necessária.');
-        }
+        console.log(await editReport(relatorio.id, reportData));
     } catch (error) {
         console.error('Erro ao atualizar o relatório:', error);
-    } finally {
-        await prisma.$disconnect();
     }
-};
-
-const getCurrentCounter = async (impressoraId: number): Promise<number> => {
-    const impressora = await prisma.impressora.findUnique({
-        where: { id: impressoraId },
-        select: { contadorAtualPB: true, contadorAtualCor: true }
-    });
-
-    if (!impressora) {
-        throw new Error(`Impressora com ID ${impressoraId} não encontrada`);
-    }
-
-    const latestReport = await prisma.relatorio.findFirst({
-        where: { impressoraId },
-        orderBy: { ultimaAtualizacao: 'desc' }
-    });
-
-    const previousCounter = latestReport ? latestReport.ultimoResultado : 0;
-    return (impressora.contadorAtualPB + impressora.contadorAtualCor) - previousCounter;
-};
-
-const isMonthPassed = (lastUpdateDate: Date, currentDate: Date): boolean => {
-    const lastUpdateMonth = lastUpdateDate.getFullYear() * 12 + lastUpdateDate.getMonth();
-    const currentMonth = currentDate.getFullYear() * 12 + currentDate.getMonth();
-    return (currentMonth - lastUpdateMonth) >= 1;
 };
