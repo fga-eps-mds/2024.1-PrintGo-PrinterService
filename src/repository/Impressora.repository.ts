@@ -1,7 +1,7 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import { Impressora } from '../types/Impressora.type'
 import { getById } from "./Padrao.repository";
-import { getSnmpData} from "../snmp/snmpUtils"
+import { getSnmpData} from "../snmp/netsnmpUtils"
 
 const impressoraClient = new PrismaClient().impressora;
 const prisma = new PrismaClient();
@@ -181,7 +181,7 @@ export const updatePrinterCounts = async (): Promise<boolean> => {
 
             const host = impressora.enderecoIp;
             const oidsArray = Object.values(oids).filter(oid => oid !== null);
-            const snmpData = await getSnmpData(host, 161,oidsArray);    //era bom ter o port no banco caso n seja 161 padrao
+            const snmpData = await getSnmpData(host,oidsArray);    //era bom ter o port no banco caso n seja 161 padrao
 
             const counts = {
                 contadorAtualPB: parseInt(snmpData[oids.oidCopiasPB] || '0', 10),
