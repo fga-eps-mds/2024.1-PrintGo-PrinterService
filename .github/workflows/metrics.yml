@@ -5,7 +5,11 @@ on:
     pull_request:
         branches:
             - main
+            - dev
         types: [closed]
+    push:
+        branches:
+            - main
 
 jobs:
     release:
