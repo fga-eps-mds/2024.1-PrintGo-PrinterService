@@ -4,6 +4,7 @@ import locationRoutes from './routes/location.route';
 import padraoRoutes from './routes/padrao.route';
 import impressoraRoutes from './routes/impressora.route';
 import reportRoutes from './routes/report.route';
+const { schedulePrinterCountsUpdate } = require('./scripts/scheduler')
 
 const corsOptions = {
     origin: '*',
@@ -26,6 +27,8 @@ app.use('/', impressoraRoutes);
 const server = app.listen(PORT, () => {
     console.log(`Server is running ${PORT}`);
 });
+
+schedulePrinterCountsUpdate();
 
 export { server };
 
