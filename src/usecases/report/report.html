@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        html {
+            background-color: #f9f9f9;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 10px;
+            background-color: #f9f9f9;
+            font-size: 12px;
+        }
+
+        h1 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .details {
+            margin-bottom: 5px;
+            background-color: #fff;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+
+        .details .row {
+            display: flex;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .details .row:last-child {
+            border-bottom: none;
+        }
+
+        .details .row .label {
+            flex: 1;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .details .row .value {
+            flex: 2;
+            text-align: right;
+            color: #555;
+        }
+
+        .chart {
+            margin: 15px 0;
+        }
+
+        .chart-item {
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .chart-item .label {
+            margin-bottom: 3px;
+            font-weight: bold;
+        }
+
+        .chart-item .value {
+            margin-bottom: 3px;
+            color: #555;
+        }
+
+        .chart-item .bar {
+            height: 20px;
+            color: white;
+            text-align: center;
+            line-height: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Relatório de Impressora</h1>
+    <p>Data do Relatório: {{reportDate}}</p>
+    <p>Data do último Relatório mensal: {{lastReportDate}}</p>
+    <p>Data da Instalação: {{installationDate}}</p>
+
+    <h2>Detalhes</h2>
+    <div class="details">
+        <div class="row">
+            <div class="label">Número de Série:</div>
+            <div class="value">{{printerSerial}}</div>
+        </div>
+        <div class="row">
+            <div class="label">Número do Contrato:</div>
+            <div class="value">{{contractNumber}}</div>
+        </div>
+        <div class="row">
+            <div class="label">Data da Instalação:</div>
+            <div class="value">{{installationDate}}</div>
+        </div>
+        <div class="row">
+            <div class="label">Localização:</div>
+            <div class="value">{{location}}</div>
+        </div>
+        <div class="row">
+            <div class="label">Modelo:</div>
+            <div class="value">{{model}}</div>
+        </div>
+        <div class="row">
+            <div class="label">Contador P/B:</div>
+            <div class="value">{{blackWhiteCount}}</div>
+        </div>
+        <div class="row">
+            <div class="label">Contador Colorido:</div>
+            <div class="value">{{colorCount}}</div>
+        </div>
+        <div class="row">
+            <div class="label">Crescimento Anterior (%):</div>
+            <div class="value">{{previousGrowth}}</div>
+        </div>
+        <div class="row">
+            <div class="label">Crescimento Atual (%):</div>
+            <div class="value">{{currentGrowth}}</div>
+        </div>
+    </div>
+
+    <h2>Gráficos do Relatório</h2>
+    <div class="chart">
+        <div class="chart-item">
+            <div class="label">Preto e branco:</div>
+            <div class="value">{{blackWhiteCountChart}}</div>
+            <div class="bar" style="width: {{blackWhiteBarWidth}}%; background-color: #4A90E2;"></div>
+        </div>
+        <div class="chart-item">
+            <div class="label">Colorido:</div>
+            <div class="value">{{colorCountChart}}</div>
+            <div class="bar" style="width: {{colorBarWidth}}%; background-color: #50E3C2;"></div>
+        </div>
+            <div class="chart-item" style="margin-top: 60px; margin-bottom: 60px;">
+            <div class="label">Aumento em relação ao mês anterior:</div>
+            <div class="value">A impressora apresentou um aumento de {{currentGrowthChart}}% em comparação com o mês anterior.</div>
+        </div>
+    </div>
+
+    <footer>Relatório gerado automaticamente pelo sistema</footer>
+</body>
+
+</html>

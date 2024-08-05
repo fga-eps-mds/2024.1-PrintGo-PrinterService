@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-import { Impressora } from '../types/Impressora.type'
-import { createImpressora, findImpressora, findImpressoraByNumSerie,listImpressoras, deleteImpressora, updateImpressora } from '../repository/Impressora.repository'
+import { createImpressora, findImpressora, findImpressoraByNumSerie, listImpressoras, deleteImpressora, updateImpressora, listImpressorasRelatorio } from '../repository/Impressora.repository'
 import { createImpressoraValidator as createValidator, updateImpressoraValidator as updateValidator } from './validator/Impressora.validator';
 
 export default {
@@ -58,15 +57,38 @@ export default {
             });
         }
     },
-    
+
+    async listImpressorasReports(request: Request, response: Response) {
+        try {
+            let result = await listImpressorasRelatorio();
+            if (!result) {
+                return response.status(500).json({
+                    message: 'Erro: Não foi possível listar impressoras.',
+                });
+            }
+
+            return response.status(200).json({
+                message: 'Sucesso: Impressoras listadas com sucesso!',
+                data: result
+            });
+
+        } catch (error) {
+            return response.status(500).json({
+                error: true,
+                message: 'Erro: Ocorreu um erro ao listar as impressoras.'
+            });
+        }
+    },
+
+
     async updateImpressora(request: Request, response: Response) {
         const { error, value } = updateValidator.validate(request.body);
         if (error) {
             return response.status(400).json({ error: error.details });
         }
-        
+
         const { id } = request.params;
-        
+
         try {
             const idNumber = parseInt(id, 10);
             if (isNaN(idNumber)) {
