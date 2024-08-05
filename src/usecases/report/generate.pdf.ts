@@ -27,7 +27,9 @@ export async function createReport(reportData: ReportData): Promise<Buffer> {
     const blackWhiteBarWidth = Math.min((blackWhiteCountDiff / 2000) * 100, 100);
     const colorBarWidth = Math.min((colorCountDiff / 2000) * 100, 100);
 
-    const htmlTemplatePath = path.join(__dirname, 'report.html');
+    // Pega path do html no root do projeto
+    const htmlTemplatePath = path.resolve(__dirname, '..', '..', '..', 'templates', 'report.html');
+    console.log(htmlTemplatePath);
 
     let htmlTemplate = fs.readFileSync(htmlTemplatePath, 'utf-8');
     htmlTemplate = htmlTemplate
