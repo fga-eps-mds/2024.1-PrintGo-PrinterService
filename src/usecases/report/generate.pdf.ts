@@ -1,6 +1,5 @@
 import htmlPdf from 'html-pdf';
 import fs from 'fs';
-import path from 'path';
 import { format } from 'date-fns';
 import { RelatorioData as ReportData } from '../../types/Relatorio.type';
 
@@ -27,11 +26,7 @@ export async function createReport(reportData: ReportData): Promise<Buffer> {
     const blackWhiteBarWidth = Math.min((blackWhiteCountDiff / 2000) * 100, 100);
     const colorBarWidth = Math.min((colorCountDiff / 2000) * 100, 100);
 
-    // Pega path do html no root do projeto
-    const htmlTemplatePath = path.resolve(__dirname, '..', '..', '..', 'templates', 'report.html');
-    console.log(htmlTemplatePath);
-
-    let htmlTemplate = fs.readFileSync(htmlTemplatePath, 'utf-8');
+    let htmlTemplate = fs.readFileSync("./templates/report.html", 'utf-8');
     htmlTemplate = htmlTemplate
         .replace('{{reportDate}}', reportDateString)
         .replace('{{lastReportDate}}', lastDateString)
