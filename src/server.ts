@@ -4,6 +4,9 @@ import locationRoutes from './routes/location.route';
 import padraoRoutes from './routes/padrao.route';
 import impressoraRoutes from './routes/impressora.route';
 import reportRoutes from './routes/report.route';
+import { reportSchedule } from './usecases/report/schedule.report';
+
+reportSchedule.start();
 
 const corsOptions = {
     origin: '*',
