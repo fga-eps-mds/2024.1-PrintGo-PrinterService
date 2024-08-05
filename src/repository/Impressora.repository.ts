@@ -31,6 +31,20 @@ export const listImpressorasRelatorio = async (): Promise<Impressora[] | false> 
     }
 }
 
+export const listImpressorasContract = async (contractId: string): Promise<Impressora[] | false> => {
+    try {
+        const impressoras = await impressoraClient.findMany({
+            where: {
+                numContrato: contractId,
+            },
+        });
+        return impressoras;
+    } catch (error) {
+        console.error("Erro ao procurar impressoras: ", error);
+        return false;
+    }
+}
+
 export const findImpressora = async (id: number): Promise<Impressora | false> => {
     try {
         const impressora = await impressoraClient.findUnique({ where: { id } });

@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
-import { listImpressorasRelatorio, findImpressoraWithReport } from '../repository/Impressora.repository'
+import { listImpressorasContract, findImpressoraWithReport } from '../repository/Impressora.repository'
 import { generateReport, generateMonthReport, createPdf } from '../usecases/report/generate.report'
 import { Impressora } from '../types/Impressora.type'
 import fs from 'fs';
-import { updateReport } from '../usecases/report/update.report';
 
 export default {
 
-    async listImpressorasReports(request: Request, response: Response) {
+    async listImpressorasContractReports(request: Request, response: Response) {
         try {
-            let result = await listImpressorasRelatorio();
+            const contractId: string = request.params.contractId as string;
+            const result: Impressora[] | false = await listImpressorasContract(contractId);
             if (!result) {
                 return response.status(500).json({
                     message: 'Erro: Não foi possível listar impressoras.',
