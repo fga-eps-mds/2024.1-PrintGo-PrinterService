@@ -3,6 +3,7 @@ FROM node:18
 WORKDIR /src
 
 ENV PORT=8001
+ARG DATABASE_URL
 
 COPY ./package.json .
 RUN yarn install
