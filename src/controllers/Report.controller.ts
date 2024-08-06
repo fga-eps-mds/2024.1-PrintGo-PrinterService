@@ -56,13 +56,8 @@ export default {
             if (!result) {
                 return response.status(404).json({ error: "Relatório não encontrado" });
             }
-            await updateReport(result);
 
-            const resultTest: Impressora | false = await findImpressoraWithReport(numberID);
-            if (!resultTest) {
-                return response.status(404).json({ error: "Relatório não encontrado" });
-            }
-            const filePath: string | false = await createPdf(generateMonthReport(resultTest));
+            const filePath: string | false = await createPdf(generateMonthReport(result));
             if (!filePath) {
                 return response.status(500).json({ error: "Erro ao gerar o relatório" });
             }
