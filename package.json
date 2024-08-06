@@ -4,7 +4,7 @@
     "description": "",
     "main": "App.js",
     "scripts": {
-        "test": "jest --passWithNoTests --no-cache --runInBand",
+        "test": "NODE_ENV=test jest --passWithNoTests --no-cache --runInBand",
         "test:all": "CI=true npm run test -- --coverage",
         "build": "tsc",
         "start": "nodemon",

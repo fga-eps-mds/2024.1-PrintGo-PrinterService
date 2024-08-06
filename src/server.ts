@@ -6,7 +6,8 @@ import impressoraRoutes from './routes/impressora.route';
 import reportRoutes from './routes/report.route';
 import { reportSchedule } from './usecases/report/schedule.report';
 
-reportSchedule.start();
+if (reportSchedule !== null)
+    reportSchedule.start();
 
 const corsOptions = {
     origin: '*',
