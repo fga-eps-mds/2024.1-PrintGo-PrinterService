@@ -38,6 +38,7 @@ export const listImpressorasContract = async (contractId: string): Promise<Parti
                 numContrato: contractId,
             },
             select: {
+                    id: true,
                     numSerie: true,
                     contadorAtualPB: true,
                     contadorAtualCor: true,
