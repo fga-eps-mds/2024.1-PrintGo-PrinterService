@@ -13,6 +13,7 @@ services:
       - .:/src
     ports:
       - "8001:8001"
+      - "161:161/udp"
     env_file:
       - .env
     networks:
@@ -38,4 +39,3 @@ networks:
     name: printgo_network
     driver: bridge
     external: true
-
