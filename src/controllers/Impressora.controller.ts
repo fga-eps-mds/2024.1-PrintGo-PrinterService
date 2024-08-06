@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { createImpressora, findImpressora, findImpressoraByNumSerie, listImpressoras, deleteImpressora, updateImpressora, listImpressorasRelatorio } from '../repository/Impressora.repository'
-import { createImpressoraValidator as createValidator, updateImpressoraValidator as updateValidator } from './validator/Impressora.validator';
+import { createImpressora, findImpressora, findImpressoraByNumSerie, listImpressoras, deleteImpressora, updateImpressora, listImpressorasRelatorio, addContadores } from '../repository/Impressora.repository'
+import { addcontadorValidator, createImpressoraValidator as createValidator, updateImpressoraValidator as updateValidator } from './validator/Impressora.validator';
 
 export default {
     async createImpressora(request: Request, response: Response) {
@@ -185,4 +185,38 @@ export default {
             });
         }
     },
-};
+
+    async addContadores(request: Request, response: Response) {
+        const { error, value } = addcontadorValidator.validate(request.body);
+        
+
+        if (error) {
+            return response.status(400).json({ error: error.details });
+        }
+        
+
+        try {
+            const { numSerie } = value;
+
+            const result = await addContadores(numSerie, value);
+
+            if (!result) {
+                return response.status(404).json({
+                    message: 'Erro: Impressora não encontrada.',
+                });
+            }
+
+            return response.status(200).json({
+                message: 'Sucesso: Contadores atualizados com sucesso!',
+                data: result
+            });
+
+        } catch (error) {
+            return response.status(500).json({
+                error: true,
+                message: error.message,
+            });
+        }
+    },
+
+};    
