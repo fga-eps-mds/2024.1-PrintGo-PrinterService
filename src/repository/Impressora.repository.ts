@@ -31,13 +31,29 @@ export const listImpressorasRelatorio = async (): Promise<Impressora[] | false> 
     }
 }
 
-export const listImpressorasContract = async (contractId: string): Promise<Impressora[] | false> => {
+export const listImpressorasContract = async (contractId: string): Promise<Partial<Impressora>[] | false> => {
     try {
         const impressoras = await impressoraClient.findMany({
             where: {
                 numContrato: contractId,
             },
-        });
+            select: {
+                    numSerie: true,
+                    contadorAtualPB: true,
+                    contadorAtualCor: true,
+                    contadorInstalacaoPB: true,
+                    contadorInstalacaoCor: true,
+                    contadorRetiradaPB: true,
+                    contadorRetiradaCor: true,
+                    relatorioLocadora: {
+                        select: {
+                            contadorPB: true,
+                            contadorCor: true,
+                            contadorTotal: true,
+                        },
+                    },
+                },
+            });
         return impressoras;
     } catch (error) {
         console.error("Erro ao procurar impressoras: ", error);
@@ -57,7 +73,7 @@ export const findImpressora = async (id: number): Promise<Impressora | false> =>
 
 export const findImpressoraWithReport = async (id: number): Promise<Impressora | false> => {
     try {
-        const impressora = await impressoraClient.findUnique({ where: { id }, include: {relatorio: true}});
+        const impressora = await impressoraClient.findUnique({ where: { id }, include: { relatorio: true } });
         return impressora;
     } catch (error) {
         console.error("Erro ao procurar impressora única:", error);

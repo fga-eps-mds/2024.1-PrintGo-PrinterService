@@ -9,7 +9,7 @@ export default {
     async listImpressorasContractReports(request: Request, response: Response) {
         try {
             const contractId: string = request.params.contractId as string;
-            const result: Impressora[] | false = await listImpressorasContract(contractId);
+            const result: Partial<Impressora>[] | false = await listImpressorasContract(contractId);
             if (!result) {
                 return response.status(500).json({
                     message: 'Erro: Não foi possível listar impressoras.',
