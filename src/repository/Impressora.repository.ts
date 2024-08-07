@@ -151,10 +151,10 @@ export const deleteImpressora = async (id: number): Promise<Impressora | false> 
     
 };
 
-export const addContadores = async (numSerie: string, contadores: Partial<Impressora> ): Promise<Impressora | false> => {
+export const addContadores = async (id: number, contadores: Partial<Impressora> ): Promise<Impressora | false> => {
     try {
         const updatedImpressora = await impressoraClient.update({
-            where: { numSerie },
+            where: { id },
             data: contadores as Prisma.ImpressoraUpdateInput,
         });
         return updatedImpressora;

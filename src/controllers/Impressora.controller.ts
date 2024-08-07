@@ -194,11 +194,18 @@ export default {
             return response.status(400).json({ error: error.details });
         }
         
+        const { id } = request.params;
+
+        const idNumber = parseInt(id, 10);
+        if (isNaN(idNumber)) {
+          return response.status(400).json({
+            message: 'Erro: ID inválido.',
+          });
+        }
 
         try {
-            const { numSerie } = value;
 
-            const result = await addContadores(numSerie, value);
+            const result = await addContadores(idNumber, value);
 
             if (!result) {
                 return response.status(404).json({
