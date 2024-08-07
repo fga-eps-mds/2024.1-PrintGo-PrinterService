@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { createImpressora, findImpressora, findImpressoraByNumSerie, listImpressoras, deleteImpressora, updateImpressora, listImpressorasRelatorio, addContadores } from '../repository/Impressora.repository'
-import { addcontadorValidator, createImpressoraValidator as createValidator, updateImpressoraValidator as updateValidator } from './validator/Impressora.validator';
+import { createImpressora, findImpressora, findImpressoraByNumSerie, listImpressoras, deleteImpressora, updateImpressora, listImpressorasRelatorio, updateContadores } from '../repository/Impressora.repository'
+import { updateContadoresValidator, createImpressoraValidator as createValidator, updateImpressoraValidator as updateValidator } from './validator/Impressora.validator';
 
 export default {
     async createImpressora(request: Request, response: Response) {
@@ -186,8 +186,8 @@ export default {
         }
     },
 
-    async addContadores(request: Request, response: Response) {
-        const { error, value } = addcontadorValidator.validate(request.body);
+    async updateContadores(request: Request, response: Response) {
+        const { error, value } = updateContadoresValidator.validate(request.body);
         
 
         if (error) {
@@ -205,7 +205,7 @@ export default {
 
         try {
 
-            const result = await addContadores(idNumber, value);
+            const result = await updateContadores(idNumber, value);
 
             if (!result) {
                 return response.status(404).json({

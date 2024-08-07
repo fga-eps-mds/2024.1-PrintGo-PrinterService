@@ -93,7 +93,7 @@ export const updateImpressoraValidator = Joi.object({
     modeloId: Joi.string().optional(),
 });
 
-export const addcontadorValidator = Joi.object({
+export const updateContadoresValidator = Joi.object({
     contadorAtualPB: contadorValidation,
     contadorAtualCor: contadorValidation
 });

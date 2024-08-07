@@ -151,7 +151,7 @@ export const deleteImpressora = async (id: number): Promise<Impressora | false> 
     
 };
 
-export const addContadores = async (id: number, contadores: Partial<Impressora> ): Promise<Impressora | false> => {
+export const updateContadores = async (id: number, contadores: Partial<Impressora> ): Promise<Impressora | false> => {
     try {
         const updatedImpressora = await impressoraClient.update({
             where: { id },

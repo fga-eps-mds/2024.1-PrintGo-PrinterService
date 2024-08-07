@@ -1,5 +1,5 @@
 import {
-  addcontadorValidator,
+  updateContadoresValidator,
   createImpressoraValidator,
   updateImpressoraValidator,
 } from "../../src/controllers/validator/Impressora.validator";
@@ -158,14 +158,14 @@ describe("Impressora Validators", () => {
     });
   });
 
-  describe("addContadorValidator", () => {
+  describe("updateContadoresValidator", () => {
     it("should validate a valid printer counter update payload", () => {
       const validData = {
         contadorAtualPB: 1200,
         contadorAtualCor: 600,
       };
 
-      const { error } = addcontadorValidator.validate(validData);
+      const { error } = updateContadoresValidator.validate(validData);
       expect(error).toBeUndefined();
     });
 
@@ -175,7 +175,7 @@ describe("Impressora Validators", () => {
         contadorAtualCor: 600,
       };
 
-      const { error } = addcontadorValidator.validate(invalidData);
+      const { error } = updateContadoresValidator.validate(invalidData);
       expect(error).toBeDefined()
       expect(error?.details[0].message).toContain(
         "O numero do contador deve ser maior que zero!"
