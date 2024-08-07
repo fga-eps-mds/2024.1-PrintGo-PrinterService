@@ -1,11 +1,25 @@
-import { listImpressoras, findImpressora, findImpressoraByNumSerie, createImpressora, updateImpressora, deleteImpressora } from '../../src/repository/Impressora.repository';
+import { listImpressoras, findImpressora, findImpressoraByNumSerie, createImpressora, updateImpressora, deleteImpressora, updatePrinterCounts } from '../../src/repository/Impressora.repository';
 import request from 'supertest';
 import { server } from '../../src/server';
+import { prisma } from '../../src/database';
+import { resolveSoa } from 'dns';
+const snmp = require("net-snmp");
 
 function generateRandomSerialNumber() {
     const randomNumber = Math.floor(Math.random() * 1000000000);
     return `${randomNumber}`;
 }
+
+jest.mock('net-snmp', () => {
+    return {
+        createSession: jest.fn().mockReturnValue({
+            get: jest.fn(),
+            close: jest.fn(),
+        }),
+        isVarbindError: jest.fn(),
+        varbindError: jest.fn()
+    };
+});
 
 describe('Impressora Service Integration Tests', () => {
     let defaultPrinter = {
@@ -25,11 +39,41 @@ describe('Impressora Service Integration Tests', () => {
         ativo: true,
     };
 
+    const padraoExemplo = {
+        modelo: "Imprime Baixo 3000",
+        marca: "Epston",
+        colorido: false,
+        tipo: "Multifuncional laser colorido",
+        oidModelo: "1.3.6.1.2.1.1.1.0",
+        oidNumeroSerie: "1.3.6.1.2.1.43.5.1.1.17.1",
+        oidFirmware: "1.3.6.1.2.1.43.5.1.1.16.1",
+        oidTempoAtivo: "1.3.6.1.2.1.1.3.0",
+        oidDigitalizacoes: "1.3.6.1.2.1.43.10.2.1.4.1.1",
+        oidCopiasPB: "1.3.6.1.2.1.43.10.2.1.4.1.2",
+        oidTotalGeral: "1.3.6.1.2.1.43.10.2.1.4.1.4"
+    };
+
     let createdPrinterId = 0;
 
     afterAll(() => {
         server.close();
     });
+
+    afterEach(async () => {
+        await prisma.relatorio.deleteMany({});
+        await prisma.impressora.deleteMany({});
+        await prisma.padrao.deleteMany({});
+    });
+
+    const criaPadrao = async (modelo: string) => {
+        const dadosPadrao = padraoExemplo;
+        dadosPadrao.modelo = modelo;
+        await prisma.padrao.create({data: dadosPadrao});
+    };
+
+    const criaImpressora = async (data) => {
+        await prisma.impressora.create({data: data});
+    };
 
     it('should list all impressoras', async () => {
         const res = await request(server)
@@ -65,5 +109,38 @@ describe('Impressora Service Integration Tests', () => {
         expect(result).not.toBe(false);
         expect(result).toHaveProperty('ativo', false);
     });
-});
 
+    it("should update printer counters", async () => {
+        await criaPadrao("modelo1");
+        const padrao = await prisma.padrao.findFirst({where: {modelo:"modelo1"}});
+        const modeloId = padrao.id;
+
+        let impressoraData = defaultPrinter;
+        impressoraData.modeloId = modeloId.toString();
+        await criaImpressora(impressoraData);
+        const impressora = await prisma.impressora.findFirst({where: {modeloId: modeloId.toString()}});
+        console.log(impressora)
+        const impressoraId = impressora.id;
+            
+        const mockVarbinds = [
+            { oid: "1.3.6.1.2.1.1.1.0", value: "modelo" },
+            { oid: "1.3.6.1.2.1.43.5.1.1.17.1", value: "123456" },
+            { oid: "1.3.6.1.2.1.43.5.1.1.16.1", value: "1.1.0" },
+            { oid: "1.3.6.1.2.1.1.3.0", value: 10 },
+            { oid: "1.3.6.1.2.1.43.10.2.1.4.1.1", value: 0 },
+            { oid: "1.3.6.1.2.1.43.10.2.1.4.1.2", value: 10_001 },
+            { oid: "1.3.6.1.2.1.43.10.2.1.4.1.4", value: 10_001 }
+        ];
+    
+        snmp.isVarbindError.mockReturnValue(false);
+        snmp.createSession().get.mockImplementation((oids, callback) => {
+          callback(null, mockVarbinds);
+        });
+    
+        await updatePrinterCounts();
+
+        const impressoraAtualizada = await prisma.impressora.findUnique({where: {id: impressoraId}});
+
+        expect(impressoraAtualizada.contadorAtualPB).toBe(10_001);
+    });
+});

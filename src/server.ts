@@ -28,7 +28,7 @@ const server = app.listen(PORT, () => {
     console.log(`Server is running ${PORT}`);
 });
 
-schedulePrinterCountsUpdate();
+// schedulePrinterCountsUpdate();
 
 export { server };
 
