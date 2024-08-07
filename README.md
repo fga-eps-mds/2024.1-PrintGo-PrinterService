@@ -1,4 +1,4 @@
-# 2023.2-PrintGo-UserService
+# 2024.1-PrintGo-PrinterService
 
 <div align="center">
      <img src="assets/logoPrintGo.svg" height="350px" width="350px">
@@ -6,35 +6,24 @@
 
 ## Quality Control
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=fga-eps-mds_2023.2-PrintGo-BackEnd&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=fga-eps-mds_2023.2-PrintGo-BackEnd)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=fga-eps-mds-1_2024-1-printgo-printerservice&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=fga-eps-mds-1_2024-1-printgo-printerservice)
 
-[![codecov](https://codecov.io/gh/fga-eps-mds/2023.2-PrintGo-UserService/graph/badge.svg?token=g0er9UGKLc)](https://codecov.io/gh/fga-eps-mds/2023.2-PrintGo-UserService)
-
-## Sobre
-
-O PrintGo é um sistema produzido para a PC-GO cuja função é monitorar ativos de impressão. A ferramenta, que é de fácil uso, auxilia na contagem de impressões na hora de prestação de contas e para isso apresenta um dashboard que pode ser transformado em relatórios.
-
-Aplicação disponível em: [link da aplicação](?)
+<!-- Aplicação disponível em: [link da aplicação](?) -->
 
 ## Requisitos
 
 - Node.js 18.18 (Latest em 10-05-2023)
 - Docker
 - Docker-compose
--**Base de dados do prisma rodando**
-
-
 
 ### Instalação
 
-- **Execução local necessário servico do postgres-prisma estar rodando**
-
 ```bash
 # 1. Clone o projeto
-git clone https://github.com/fga-eps-mds/2023.2-PrintGo-PrinterService.git
+git clone https://github.com/fga-eps-mds/2024.1-PrintGo-PrinterService
 
 # 2. Entre na pasta do projeto
-cd 2023.2-PrintGo-PrinterService
+cd 2024.1-PrintGo-PrinterService
 
 docker-compose up --build
     # --build somente eh necessario na primeira vez que estiver rodando
@@ -46,18 +35,13 @@ docker-compose up --build
 
 ## Contribuir
 
-Para contribuir com esse projeto é importante seguir nosso [Guia de Contribuição](https://fga-eps-mds.github.io/2023.2-PrintGo-Doc/guia_de_contribuicao/) do repositório e seguir nosso [Código de Conduta](https://fga-eps-mds.github.io/2023.2-PrintGo-Doc/codigo_conduta/).
+Para contribuir com esse projeto é importante seguir nosso [Guia de Contribuição](https://fga-eps-mds.github.io/2024.1-PrintGo-Doc/inicio/guia_contribuicao/).
 
-## Ambientes
+## repositórios do projeto
 
-- [Documentação](https://github.com/fga-eps-mds/2023.2-PrintGo-Doc)
-
-- [Front-End](https://github.com/fga-eps-mds/2023.2-PrintGo-FrontEnd)
-
-- [ApiGateway](https://github.com/fga-eps-mds/2023.2-PrintGo-ApiGateway)
-
-- [Back-End: UserService](https://github.com/fga-eps-mds/2023.2-PrintGo-UserService)
-
-- [Back-End: OcurrenceService](https://github.com/fga-eps-mds/2023.2-PrintGo-OcurrenceService)
-
-- [Back-End: PrinterService](https://github.com/fga-eps-mds/2023.2-PrintGo-PrinterService)
+[Api-Gateway](https://github.com/fga-eps-mds/2024.1-PrintGo-ApiGateway)  
+[ContractService](https://github.com/fga-eps-mds/2024.1-PrintGo-ContractService)  
+[Documentação](https://github.com/fga-eps-mds/2024.1-PrintGo-Doc)  
+[FrontEnd](https://github.com/fga-eps-mds/2024.1-PrintGo-FrontEnd)  
+[PrinterService](https://github.com/fga-eps-mds/2024.1-PrintGo-PrinterService)  
+[UserService](https://github.com/fga-eps-mds/2024.1-PrintGo-UserService)  

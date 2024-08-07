@@ -51,6 +51,7 @@ model Impressora {
   localizacao           String
   modeloId              String
   relatorio             Relatorio?
+  relatorioLocadora     RelatorioLocadora?
 }
 
 model Relatorio {
@@ -64,4 +65,13 @@ model Relatorio {
   ultimoResultado   Int
   resultadoAtual    Int
   ultimaAtualizacao DateTime
+}
+
+model RelatorioLocadora {
+  id                Int        @id @default(autoincrement())
+  impressora        Impressora @relation(fields: [impressoraId], references: [id])
+  impressoraId      Int        @unique
+  contadorPB       Int
+  contadorCor       Int
+  contadorTotal    Int
 }
