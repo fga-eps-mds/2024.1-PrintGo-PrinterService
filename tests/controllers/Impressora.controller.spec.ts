@@ -137,6 +137,22 @@ describe('Impressora Controller', () => {
         expect(response.body.data).toHaveProperty('contadorAtualCor', 700);
     });
 
+    it('should update the printers counters and return a 200 status', async () => {
+      const updatedCounters = {
+          contadorAtualPB: 1300,
+          contadorAtualCor: 700,
+      };
+
+      const response = await request(server)
+          .patch(`/contadores/${impressoraId}`)
+          .send(updatedCounters);
+
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe('Sucesso: Contadores atualizados com sucesso!');
+      expect(response.body.data).toHaveProperty('contadorAtualPB', 1300);
+      expect(response.body.data).toHaveProperty('contadorAtualCor', 700);
+  });
+
     it('should return a 400 status if the printer ID is invalid', async () => {
         const response = await request(server)
             .patch(`/invalid-id`)
@@ -146,6 +162,19 @@ describe('Impressora Controller', () => {
         expect(response.body.message).toBe('Erro: ID inválido.');
     });
 
+    it('should return a 400 status if the printer to update counters ID is invalid', async () => {
+      const updatedCounters = {
+        contadorAtualPB: 1300,
+        contadorAtualCor: 700,
+      };
+      const response = await request(server)
+          .patch(`/contadores/invalid-id`)
+          .send(updatedCounters);
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Erro: ID inválido.');
+  });
+
     it('should return a 404 status if the printer is not found', async () => {
         const response = await request(server)
             .patch(`/99999`)
@@ -154,6 +183,19 @@ describe('Impressora Controller', () => {
         expect(response.status).toBe(404);
         expect(response.body.message).toBe('Erro: Impressora não encontrada.');
     });
+
+    it('should return a 404 status if the printer to update counters is not found', async () => {
+      const updatedCounters = {
+        contadorAtualPB: 1300,
+        contadorAtualCor: 700,
+      };
+      const response = await request(server)
+          .patch(`/contadores/99999`)
+          .send(updatedCounters);
+
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe('Erro: Impressora não encontrada.');
+  });
 
     it('should delete an existing printer and return a 200 status', async () => {
         const response = await request(server)

@@ -1,4 +1,4 @@
-import { listImpressoras, findImpressora, findImpressoraByNumSerie, createImpressora, updateImpressora, deleteImpressora } from '../../src/repository/Impressora.repository';
+import { listImpressoras, findImpressora, findImpressoraByNumSerie, createImpressora, updateImpressora, deleteImpressora, addContadores } from '../../src/repository/Impressora.repository';
 import request from 'supertest';
 import { server } from '../../src/server';
 
@@ -65,5 +65,14 @@ describe('Impressora Service Integration Tests', () => {
         expect(result).not.toBe(false);
         expect(result).toHaveProperty('ativo', false);
     });
+
+    it('should update printer counter', async () => {
+      const updateData = { 
+        contadorAtualPB: 1300,
+        contadorAtualCor: 700, 
+      };
+      const result = await addContadores(createdPrinterId, updateData);
+      expect(result).not.toBe(false);
+  });
 });
 
