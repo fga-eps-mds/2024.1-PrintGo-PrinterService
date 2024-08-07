@@ -7,7 +7,8 @@
         "test": "jest --passWithNoTests --no-cache --runInBand",
         "test:all": "CI=true npm run test -- --coverage",
         "build": "tsc",
-        "start": "nodemon",
+        "dev": "nodemon",
+        "start": "node dist/server.js",
         "lint": "eslint  --ext .ts",
         "lint:fix": "eslint  --ext .ts --fix"
     },
