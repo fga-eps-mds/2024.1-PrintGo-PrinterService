@@ -141,7 +141,7 @@ describe('Impressora Controller', () => {
       const updatedCounters = {
           contadorAtualPB: 1300,
           contadorAtualCor: 700,
-          dataContagemManual: "2024-08-08T00:00:00.000Z"
+          dataContador: "2024-08-08T00:00:00.000Z"
       };
 
       const response = await request(server)
@@ -167,7 +167,7 @@ describe('Impressora Controller', () => {
       const updatedCounters = {
         contadorAtualPB: 1300,
         contadorAtualCor: 700,
-        dataContagemManual: "2024-08-08T00:00:00.000Z"
+        dataContador: "2024-08-08T00:00:00.000Z"
       };
       const response = await request(server)
           .patch(`/contadores/invalid-id`)
@@ -190,7 +190,7 @@ describe('Impressora Controller', () => {
       const updatedCounters = {
         contadorAtualPB: 1300,
         contadorAtualCor: 700,
-        dataContagemManual: "2024-08-08T00:00:00.000Z"
+        dataContador: "2024-08-08T00:00:00.000Z"
       };
       const response = await request(server)
           .patch(`/contadores/99999`)
