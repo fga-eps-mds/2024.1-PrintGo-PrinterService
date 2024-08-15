@@ -41,7 +41,7 @@ model Impressora {
   estaNaRede                Boolean
   dataInstalacao            DateTime
   dataRetirada              DateTime?
-  dataContagemManual        DateTime?
+  dataContador              DateTime?
   ativo                     Boolean
   contadorInstalacaoPB      Int
   contadorInstalacaoCor     Int
