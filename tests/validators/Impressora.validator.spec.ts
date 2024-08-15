@@ -163,10 +163,21 @@ describe("Impressora Validators", () => {
       const validData = {
         contadorAtualPB: 1200,
         contadorAtualCor: 600,
+        dataContagemManual: "2024-08-08T00:00:00.000Z"
       };
 
       const { error } = updateContadoresValidator.validate(validData);
       expect(error).toBeUndefined();
+    });
+
+    it("should invalidate missing required date", () => {
+      const invalidData = {
+        contadorAtualPB: 1200,
+        contadorAtualCor: 600,
+      };
+
+      const { error } = updateContadoresValidator.validate(invalidData);
+      expect(error).toBeDefined();
     });
 
     it("should invalidate negative counter", () => {
