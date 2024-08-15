@@ -7,8 +7,6 @@ ENV PORT=8001
 COPY ./package.json .
 RUN yarn install
 
-RUN echo $DOCKER_URL
-
 COPY . .
 
 EXPOSE $PORT
