@@ -95,5 +95,6 @@ export const updateImpressoraValidator = Joi.object({
 
 export const updateContadoresValidator = Joi.object({
     contadorAtualPB: contadorValidation,
-    contadorAtualCor: contadorValidation
+    contadorAtualCor: contadorValidation,
+    dataContagemManual: Joi.date().iso().required()
 });
