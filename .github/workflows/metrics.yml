@@ -1,11 +1,16 @@
 name: Metrics and Release
 
+
 on:
     workflow_dispatch:
     pull_request:
         branches:
             - main
+            - dev
         types: [closed]
+    push:
+        branches:
+          - main
 
 jobs:
     release:

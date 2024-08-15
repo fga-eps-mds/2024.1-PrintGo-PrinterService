@@ -52,17 +52,27 @@ model Impressora {
   localizacao               String
   modeloId                  String
   relatorio                 Relatorio?
+  relatorioLocadora         RelatorioLocadora?
 }
 
 model Relatorio {
   id                Int        @id @default(autoincrement())
   impressora        Impressora @relation(fields: [impressoraId], references: [id])
   impressoraId      Int        @unique
-  contadorPB       Int
-  contadorPBDiff   Int
+  contadorPB        Int
+  contadorPBDiff    Int
   contadorCor       Int
   contadorCorDiff   Int
   ultimoResultado   Int
   resultadoAtual    Int
   ultimaAtualizacao DateTime
+}
+
+model RelatorioLocadora {
+  id                Int        @id @default(autoincrement())
+  impressora        Impressora @relation(fields: [impressoraId], references: [id])
+  impressoraId      Int        @unique
+  contadorPB        Int
+  contadorCor       Int
+  contadorTotal     Int
 }

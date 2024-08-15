@@ -18,7 +18,7 @@ export const updateReport = async (impressora: Impressora): Promise<void> => {
     const diffInDays = diffInMillis / (1000 * 60 * 60 * 24);
 
     if (diffInDays < 30) {
-        console.log('Não passaram 30 dias desde a última atualização.');
+        console.debug('Não passaram 30 dias desde a última atualização.');
         return;
     }
 
