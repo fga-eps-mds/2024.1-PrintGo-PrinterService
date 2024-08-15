@@ -27,6 +27,7 @@ CREATE TABLE "Impressora" (
     "estaNaRede" BOOLEAN NOT NULL,
     "dataInstalacao" TIMESTAMP(3) NOT NULL,
     "dataRetirada" TIMESTAMP(3),
+    "dataContador" TIMESTAMP(3),
     "ativo" BOOLEAN NOT NULL,
     "contadorInstalacaoPB" INTEGER NOT NULL,
     "contadorInstalacaoCor" INTEGER NOT NULL,
