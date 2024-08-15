@@ -187,20 +187,22 @@ export default {
     },
 
     async updateContadores(request: Request, response: Response) {
-        const { error, value } = updateContadoresValidator.validate(request.body);
+      
+      const { id } = request.params;
+
+      const idNumber = parseInt(id, 10);
+
+      if (isNaN(idNumber)) {
+        return response.status(400).json({
+          message: 'Erro: ID inválido.',
+        });
+      }
+      
+      const { error, value } = updateContadoresValidator.validate(request.body);
         
 
         if (error) {
-            return response.status(400).json({ error: error.details });
-        }
-        
-        const { id } = request.params;
-
-        const idNumber = parseInt(id, 10);
-        if (isNaN(idNumber)) {
-          return response.status(400).json({
-            message: 'Erro: ID inválido.',
-          });
+          return response.status(400).json({ error: error.details });
         }
 
         try {
@@ -224,6 +226,6 @@ export default {
                 message: error.message,
             });
         }
-    },
+    }
 
 };    
