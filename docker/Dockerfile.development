@@ -3,16 +3,14 @@ FROM node:18
 WORKDIR /src
 
 ENV PORT=8001
-ARG DATABASE_URL
 
 COPY ./package.json .
 RUN yarn install
 
+RUN echo $DOCKER_URL
+
 COPY . .
 
 EXPOSE $PORT
-
-#RUN npx prisma generate
-#RUN npx prisma db push
 
 CMD [ "yarn", "dev" ]

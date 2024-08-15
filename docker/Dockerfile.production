@@ -6,12 +6,12 @@ ENV PORT=8001
 ARG DATABASE_URL
 
 COPY ./package.json .
-RUN npm install
+RUN yarn install
 
 COPY . .
 
 EXPOSE $PORT
 
-RUN npm run build
+RUN yarn build
 
-CMD [ "npm", "start" ]
+CMD [ "yarn", "start" ]
