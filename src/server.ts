@@ -7,7 +7,8 @@ import reportRoutes from './routes/report.route';
 import locadoraRoutes from './routes/locadora.route';
 import { reportSchedule } from './usecases/report/schedule.report';
 
-reportSchedule.start();
+if (reportSchedule !== null)
+    reportSchedule.start();
 
 const corsOptions = {
     origin: '*',

@@ -3,8 +3,9 @@ import { listImpressorasRelatorio } from '../../repository/Impressora.repository
 import { updateReport } from './update.report';
 import { Impressora } from '../../types/Impressora.type';
 
-export const reportSchedule = new CronJob(
-    // Roda todos os dias às 00:00
+
+export const reportSchedule = process.env.NODE_ENV !== 'test' ? new CronJob(
+    // Roda todo dia as 00:00
     '0 0 0 * * *',
     async function() {
         console.log('Iniciando a atualização dos relatórios');
@@ -21,4 +22,4 @@ export const reportSchedule = new CronJob(
     null,
     true,
     'America/Sao_Paulo' 
-);
+) : null;
