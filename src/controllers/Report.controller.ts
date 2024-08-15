@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
-import { listImpressorasRelatorio, findImpressoraWithReport } from '../repository/Impressora.repository'
+import { listImpressorasContract, findImpressoraWithReport } from '../repository/Impressora.repository'
 import { generateReport, generateMonthReport, createPdf } from '../usecases/report/generate.report'
 import { Impressora } from '../types/Impressora.type'
 import fs from 'fs';
-import { updateReport } from '../usecases/report/update.report';
 
 export default {
 
-    async listImpressorasReports(request: Request, response: Response) {
+    async listImpressorasContractReports(request: Request, response: Response) {
         try {
-            let result = await listImpressorasRelatorio();
+            const contractId: string = request.params.contractId as string;
+            const result: Partial<Impressora>[] | false = await listImpressorasContract(contractId);
             if (!result) {
                 return response.status(500).json({
                     message: 'Erro: Não foi possível listar impressoras.',
@@ -56,13 +56,8 @@ export default {
             if (!result) {
                 return response.status(404).json({ error: "Relatório não encontrado" });
             }
-            await updateReport(result);
 
-            const resultTest: Impressora | false = await findImpressoraWithReport(numberID);
-            if (!resultTest) {
-                return response.status(404).json({ error: "Relatório não encontrado" });
-            }
-            const filePath: string | false = await createPdf(generateMonthReport(resultTest));
+            const filePath: string | false = await createPdf(generateMonthReport(result));
             if (!filePath) {
                 return response.status(500).json({ error: "Erro ao gerar o relatório" });
             }
