@@ -26,7 +26,7 @@ export const updateReport = async (impressora: Impressora): Promise<void> => {
     console.log(reportData);
 
     try {
-        console.log(await editReport(relatorio.id, reportData));
+        console.log(await editReport(impressora.id, reportData));
     } catch (error) {
         console.error('Erro ao atualizar o relatório:', error);
     }
