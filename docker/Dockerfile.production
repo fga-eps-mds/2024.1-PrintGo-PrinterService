@@ -12,6 +12,7 @@ COPY . .
 
 EXPOSE $PORT
 
-RUN yarn build
+RUN npx prisma generate
+RUN npx prisma db push
 
 CMD [ "yarn", "start" ]
