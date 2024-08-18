@@ -8,6 +8,7 @@ impressoraRoutes.get('/', requestHandler(ImpressoraController.listImpressoras));
 impressoraRoutes.get('/:id', requestHandler(ImpressoraController.getImpressora));
 impressoraRoutes.get('/reports', requestHandler(ImpressoraController.listImpressorasReports));
 impressoraRoutes.patch('/:id', requestHandler(ImpressoraController.updateImpressora));
+impressoraRoutes.patch('/contadores/:id', requestHandler(ImpressoraController.updateContadores));
 impressoraRoutes.delete('/:id', requestHandler(ImpressoraController.deleteImpressora));
 
 export default impressoraRoutes;

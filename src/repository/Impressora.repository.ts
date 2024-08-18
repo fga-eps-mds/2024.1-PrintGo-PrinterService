@@ -178,4 +178,19 @@ export const deleteImpressora = async (id: number): Promise<Impressora | false> 
         console.error("Erro ao desativar impressora:", error);
         return false;
     }
+
+    
+};
+
+export const updateContadores = async (id: number, contadores: Partial<Impressora> ): Promise<Impressora | false> => {
+    try {
+        const updatedImpressora = await impressoraClient.update({
+            where: { id },
+            data: contadores as Prisma.ImpressoraUpdateInput,
+        });
+        return updatedImpressora;
+    } catch (error) {
+        console.error("Erro ao adicionar contadores:", error);
+        return false;
+    }
 };
