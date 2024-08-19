@@ -4,6 +4,8 @@ import locationRoutes from './routes/location.route';
 import padraoRoutes from './routes/padrao.route';
 import impressoraRoutes from './routes/impressora.route';
 import reportRoutes from './routes/report.route';
+import rotinaSnmpRoutes from './routes/rotinaSnmp.route';
+
 const { schedulePrinterCountsUpdate } = require('./scripts/scheduler')
 // import locadoraRoutes from './routes/locadora.route';
 import { reportSchedule } from './usecases/report/schedule.report';
@@ -28,6 +30,7 @@ app.use(cors(corsOptions));
 app.use('/location', locationRoutes);
 app.use('/report', reportRoutes);
 app.use('/padrao', padraoRoutes)
+app.use('/rotina', rotinaSnmpRoutes);
 app.use('/', impressoraRoutes);
 
 const server = app.listen(PORT, () => {
