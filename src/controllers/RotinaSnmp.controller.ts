@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { createRotina, deleteRotina, getRotinaById, listRotinas, updateRotina } from '../repository/RotinaSnmp.repository';
 import { rotinaSnmpValidator } from './validator/RotinaSnmp.validator';
+import { startCronJob, stopCronJob } from '../snmp/cronJobs';
 
 export default {
     async createRotina(request: Request, response: Response) {
@@ -12,9 +13,10 @@ export default {
         try {
             const rotinaBody = value;
             const newRotina = await createRotina(rotinaBody);
-            if (!newRotina.valueOf()) {
+            if (!newRotina) {
                 return response.status(400).send();
             }
+            startCronJob(newRotina);
             return response.status(201).json(newRotina);
         } catch (error) {
             return response.status(500).send();
@@ -68,6 +70,7 @@ export default {
             const { id } = request.params;
             const success = await deleteRotina(parseInt(id));
             if (success) {
+                stopCronJob(parseInt(id));
                 return response.status(204).send();
             } else {
                 return response.status(404).send('Rotina SNMP não encontrada');

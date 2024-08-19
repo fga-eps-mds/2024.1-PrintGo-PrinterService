@@ -33,6 +33,20 @@ export const listRotinas = async (): Promise<RotinaSnmp[]> => {
     }
 }
 
+export const listRotinasAtivas = async (): Promise<RotinaSnmp[]> => {
+    try {
+        const rotinas = await rotinaSnmpClient.findMany({
+            where: {
+                ativo: true
+            }
+        });
+        return rotinas;
+    } catch (error) {
+        console.error("Erro ao listar rotinas SNMP", error);
+        return [];
+    }
+}
+
 export const updateRotina = async (id: number, rotina: Partial<RotinaSnmp>): Promise<RotinaSnmp | false> => {
     try {
         const updatedRotina = await rotinaSnmpClient.update({

@@ -6,9 +6,9 @@ import impressoraRoutes from './routes/impressora.route';
 import reportRoutes from './routes/report.route';
 import rotinaSnmpRoutes from './routes/rotinaSnmp.route';
 
-const { schedulePrinterCountsUpdate } = require('./scripts/scheduler')
 // import locadoraRoutes from './routes/locadora.route';
 import { reportSchedule } from './usecases/report/schedule.report';
+import { carregaRotinasSnmp } from './snmp/cronJobs';
 
 if (reportSchedule !== null)
     reportSchedule.start();
@@ -37,10 +37,8 @@ const server = app.listen(PORT, () => {
     console.log(`Server is running ${PORT}`);
 });
 
-// schedulePrinterCountsUpdate();
+carregaRotinasSnmp();
 
 export { server };
 
 export default app;
-
-
