@@ -27,6 +27,7 @@ CREATE TABLE "Impressora" (
     "estaNaRede" BOOLEAN NOT NULL,
     "dataInstalacao" TIMESTAMP(3) NOT NULL,
     "dataRetirada" TIMESTAMP(3),
+    "dataContador" TIMESTAMP(3),
     "ativo" BOOLEAN NOT NULL,
     "contadorInstalacaoPB" INTEGER NOT NULL,
     "contadorInstalacaoCor" INTEGER NOT NULL,
@@ -44,11 +45,26 @@ CREATE TABLE "Impressora" (
 CREATE TABLE "Relatorio" (
     "id" SERIAL NOT NULL,
     "impressoraId" INTEGER NOT NULL,
-    "contadorMes" INTEGER NOT NULL,
+    "contadorPB" INTEGER NOT NULL,
+    "contadorPBDiff" INTEGER NOT NULL,
+    "contadorCor" INTEGER NOT NULL,
+    "contadorCorDiff" INTEGER NOT NULL,
     "ultimoResultado" INTEGER NOT NULL,
+    "resultadoAtual" INTEGER NOT NULL,
     "ultimaAtualizacao" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Relatorio_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "RelatorioLocadora" (
+    "id" SERIAL NOT NULL,
+    "impressoraId" INTEGER NOT NULL,
+    "contadorPB" INTEGER NOT NULL,
+    "contadorCor" INTEGER NOT NULL,
+    "contadorTotal" INTEGER NOT NULL,
+
+    CONSTRAINT "RelatorioLocadora_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -60,5 +76,11 @@ CREATE UNIQUE INDEX "Impressora_numSerie_key" ON "Impressora"("numSerie");
 -- CreateIndex
 CREATE UNIQUE INDEX "Relatorio_impressoraId_key" ON "Relatorio"("impressoraId");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "RelatorioLocadora_impressoraId_key" ON "RelatorioLocadora"("impressoraId");
+
 -- AddForeignKey
 ALTER TABLE "Relatorio" ADD CONSTRAINT "Relatorio_impressoraId_fkey" FOREIGN KEY ("impressoraId") REFERENCES "Impressora"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RelatorioLocadora" ADD CONSTRAINT "RelatorioLocadora_impressoraId_fkey" FOREIGN KEY ("impressoraId") REFERENCES "Impressora"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

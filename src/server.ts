@@ -5,6 +5,11 @@ import padraoRoutes from './routes/padrao.route';
 import impressoraRoutes from './routes/impressora.route';
 import reportRoutes from './routes/report.route';
 const { schedulePrinterCountsUpdate } = require('./scripts/scheduler')
+// import locadoraRoutes from './routes/locadora.route';
+import { reportSchedule } from './usecases/report/schedule.report';
+
+if (reportSchedule !== null)
+    reportSchedule.start();
 
 const corsOptions = {
     origin: '*',
@@ -19,6 +24,7 @@ const PORT = process.env.PORT || 8001;
 
 app.use(cors(corsOptions));
 
+// app.use('/locadora', locadoraRoutes);
 app.use('/location', locationRoutes);
 app.use('/report', reportRoutes);
 app.use('/padrao', padraoRoutes)

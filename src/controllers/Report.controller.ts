@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
-import { listImpressorasRelatorio, findImpressoraWithReport } from '../repository/Impressora.repository'
+import { listImpressorasContract, findImpressoraWithReport } from '../repository/Impressora.repository'
 import { generateReport, generateMonthReport, createPdf } from '../usecases/report/generate.report'
 import { Impressora } from '../types/Impressora.type'
-import fs from 'fs';
-import { updateReport } from '../usecases/report/update.report';
+import { sendFile } from '../utils/sendFile'
 
 export default {
 
-    async listImpressorasReports(request: Request, response: Response) {
+    async listImpressorasContractReports(request: Request, response: Response) {
         try {
-            let result = await listImpressorasRelatorio();
+            const contractId: string = request.params.contractId as string;
+            const result: Partial<Impressora>[] | false = await listImpressorasContract(contractId);
             if (!result) {
                 return response.status(500).json({
                     message: 'Erro: Não foi possível listar impressoras.',
@@ -42,6 +42,7 @@ export default {
                 return response.status(500).json({ error: "Erro ao gerar o relatório" });
             }
 
+            console.log(sendFile(response, filePath, result.numSerie));
             return sendFile(response, filePath, result.numSerie);
         }
         catch (error) {
@@ -56,13 +57,8 @@ export default {
             if (!result) {
                 return response.status(404).json({ error: "Relatório não encontrado" });
             }
-            await updateReport(result);
 
-            const resultTest: Impressora | false = await findImpressoraWithReport(numberID);
-            if (!resultTest) {
-                return response.status(404).json({ error: "Relatório não encontrado" });
-            }
-            const filePath: string | false = await createPdf(generateMonthReport(resultTest));
+            const filePath: string | false = await createPdf(generateMonthReport(result));
             if (!filePath) {
                 return response.status(500).json({ error: "Erro ao gerar o relatório" });
             }
@@ -78,24 +74,4 @@ export default {
 
 
 };
-
-const sendFile = (response: Response, filePath: string, numSerie: string): Promise<Response> => {
-    return new Promise<Response>((resolve, reject) => {
-        response.download(filePath, `relatorio_${numSerie}.pdf`, (err) => {
-            if (err) {
-                console.error('Erro ao enviar o arquivo:', err);
-                reject(response.status(500).json({ error: "Erro ao enviar o relatório" }));
-            } else {
-                fs.unlink(filePath, (unlinkErr: any) => {
-                    if (unlinkErr) {
-                        console.error('Erro ao deletar o arquivo:', unlinkErr);
-                    } else {
-                        console.log('Arquivo deletado com sucesso:', filePath);
-                    }
-                });
-                resolve(response);
-            }
-        });
-    });
-}
 

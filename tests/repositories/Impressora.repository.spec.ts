@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { listImpressoras, findImpressora, findImpressoraByNumSerie, createImpressora, updateImpressora, deleteImpressora, updatePrinterCounts } from '../../src/repository/Impressora.repository';
+=======
+import { listImpressoras, findImpressora, findImpressoraByNumSerie, createImpressora, updateImpressora, deleteImpressora, updateContadores } from '../../src/repository/Impressora.repository';
+>>>>>>> dev
 import request from 'supertest';
 import { server } from '../../src/server';
 import { prisma } from '../../src/database';
@@ -109,6 +113,16 @@ describe('Impressora Service Integration Tests', () => {
         expect(result).not.toBe(false);
         expect(result).toHaveProperty('ativo', false);
     });
+
+    it('should update printer counter', async () => {
+      const updateData = { 
+        contadorAtualPB: 1300,
+        contadorAtualCor: 700, 
+      };
+      const result = await updateContadores(createdPrinterId, updateData);
+      expect(result).not.toBe(false);
+  });
+});
 
     it("should update printer counters", async () => {
         await criaPadrao("modelo1");

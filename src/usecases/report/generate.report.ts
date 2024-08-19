@@ -70,6 +70,9 @@ export const createPdf = async (reportData: ReportData): Promise<string | false>
         const pdfBuffer = await createReport(reportData);
         const fileName: string = Math.random().toString(36).substring(7) + '.pdf';
         const filePath: string = `./printer_reports/${fileName}`;
+        // Escreve o buffer do PDF em um arquivo e cria diretório caso não exista
+        fs.mkdirSync('./printer_reports', { recursive: true });
+        // Escreve o buffer do PDF em um arquivo
         fs.writeFileSync(filePath, pdfBuffer);
         console.log('PDF gerado com sucesso!');
         return filePath;

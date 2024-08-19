@@ -4,8 +4,8 @@ import { requestHandler } from '../middlewares/requestWrapper.adapter';
 
 const reportRoutes = Router();
 
-reportRoutes.get('/', requestHandler(ReportController.listImpressorasReports));
-reportRoutes.get('/:id', requestHandler(ReportController.retrieveReport));
+reportRoutes.get('/contract/:contractId', requestHandler(ReportController.listImpressorasContractReports));
 reportRoutes.get('/month/:id', requestHandler(ReportController.retrieveMonthReport));
+reportRoutes.get('/:id', requestHandler(ReportController.retrieveReport));
 
 export default reportRoutes;

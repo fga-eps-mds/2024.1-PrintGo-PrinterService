@@ -8,6 +8,7 @@ export type Impressora = {
     estaNaRede: boolean;
     dataInstalacao: Date;
     dataRetirada?: Date;
+    dataContadorManual?: Date;
     ativo: boolean;
     contadorInstalacaoPB: number;
     contadorInstalacaoCor: number;
