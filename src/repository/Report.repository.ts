@@ -22,7 +22,7 @@ export const findById = async (id: number): Promise<Relatorio | false> => {
 export const updateReport = async (id: number, reportDTO: ReportDTO): Promise<Relatorio | false> => {
     try {
         const updatedReport = await relatorioClient.update({
-            where: { id: id },
+            where: { impressoraId: id },
             data: {
                 contadorPB: reportDTO.blackWhiteCount,
                 contadorCor: reportDTO.colorCount,

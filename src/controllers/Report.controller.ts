@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { listImpressorasContract, findImpressoraWithReport } from '../repository/Impressora.repository'
 import { generateReport, generateMonthReport, createPdf } from '../usecases/report/generate.report'
 import { Impressora } from '../types/Impressora.type'
-import fs from 'fs';
+import { sendFile } from '../utils/sendFile'
 
 export default {
 
@@ -42,6 +42,7 @@ export default {
                 return response.status(500).json({ error: "Erro ao gerar o relatório" });
             }
 
+            console.log(sendFile(response, filePath, result.numSerie));
             return sendFile(response, filePath, result.numSerie);
         }
         catch (error) {
@@ -73,24 +74,4 @@ export default {
 
 
 };
-
-const sendFile = (response: Response, filePath: string, numSerie: string): Promise<Response> => {
-    return new Promise<Response>((resolve, reject) => {
-        response.download(filePath, `relatorio_${numSerie}.pdf`, (err) => {
-            if (err) {
-                console.error('Erro ao enviar o arquivo:', err);
-                reject(response.status(500).json({ error: "Erro ao enviar o relatório" }));
-            } else {
-                fs.unlink(filePath, (unlinkErr: any) => {
-                    if (unlinkErr) {
-                        console.error('Erro ao deletar o arquivo:', unlinkErr);
-                    } else {
-                        console.log('Arquivo deletado com sucesso:', filePath);
-                    }
-                });
-                resolve(response);
-            }
-        });
-    });
-}
 

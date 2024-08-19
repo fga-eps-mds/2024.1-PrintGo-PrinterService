@@ -71,6 +71,28 @@ describe('Impressora Controller', () => {
         jest.restoreAllMocks();
     });
 
+    it('should return 500 status from try/catch', async () => {
+        jest.spyOn(require('../../src/repository/Impressora.repository'), 'findImpressoraByNumSerie')
+            .mockImplementationOnce(() => {
+                throw new Error('Database error');
+            });
+
+        jest.spyOn(require('../../src/repository/Impressora.repository'), 'createImpressora')
+            .mockImplementationOnce(() => {
+                throw new Error('Database error');
+            });
+
+        const response = await request(server)
+            .post('/')
+            .send(defaultPrinter);
+
+        expect(response.status).toBe(200);
+        expect(response.body.error).toBe(true);
+        expect(response.body.message).toBe('Database error');
+
+        jest.restoreAllMocks();
+    });
+
     it('should generate an error trying to create a printer that exists', async () => {
         const response = await request(server)
             .post('/')
@@ -88,6 +110,22 @@ describe('Impressora Controller', () => {
         expect(response.body.message).toBe('Sucesso: Impressoras listadas com sucesso!');
         expect(response.body.data).toBeInstanceOf(Array);
     });
+
+    it('should return a 500 status and an error message', async () => {
+        jest.spyOn(require('../../src/repository/Impressora.repository'), 'listImpressoras')
+            .mockImplementationOnce(() => {
+                false
+            });
+
+        const response = await request(server)
+            .get('/');
+
+        expect(response.status).toBe(500);
+        expect(response.body.message).toBe('Erro: Não foi possível listar impressoras.');
+
+        jest.restoreAllMocks();
+    });
+
 
     it('should return a 500 status and an error message on database error printer list', async () => {
         jest.spyOn(require('../../src/repository/Impressora.repository'), 'listImpressoras')
@@ -242,6 +280,28 @@ describe('Impressora Controller', () => {
         const response = await request(server).get('/invalidId');
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('Erro: ID inválido.');
+    });
+
+    it('should list impressoras reports and return a 200 status', async () => {
+        const response = await request(server).get('/reports');
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('Sucesso: Impressoras listadas com sucesso!');
+        expect(response.body.data).toBeInstanceOf(Array);
+    });
+
+    it('should return 500 status and an error message', async () => {
+        jest.spyOn(require('../../src/repository/Impressora.repository'), 'listImpressorasRelatorio')
+            .mockImplementationOnce(() => {
+                false
+            });
+
+        const response = await request(server)
+            .get('/reports');
+
+        expect(response.status).toBe(500);
+        expect(response.body.message).toBe('Erro: Não foi possível listar impressoras.');
+
+        jest.restoreAllMocks();
     });
 });
 
