@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { listImpressoras, findImpressora, findImpressoraByNumSerie, createImpressora, updateImpressora, deleteImpressora, updatePrinterCounts } from '../../src/repository/Impressora.repository';
-=======
 import { listImpressoras, findImpressora, findImpressoraByNumSerie, createImpressora, updateImpressora, deleteImpressora, updateContadores } from '../../src/repository/Impressora.repository';
->>>>>>> dev
 import request from 'supertest';
 import { server } from '../../src/server';
 import { prisma } from '../../src/database';
@@ -57,8 +53,6 @@ describe('Impressora Service Integration Tests', () => {
         oidTotalGeral: "1.3.6.1.2.1.43.10.2.1.4.1.4"
     };
 
-    let createdPrinterId = 0;
-
     afterAll(() => {
         server.close();
     });
@@ -72,36 +66,44 @@ describe('Impressora Service Integration Tests', () => {
     const criaPadrao = async (modelo: string) => {
         const dadosPadrao = padraoExemplo;
         dadosPadrao.modelo = modelo;
-        await prisma.padrao.create({data: dadosPadrao});
+        await prisma.padrao.create({ data: dadosPadrao });
     };
 
     const criaImpressora = async (data) => {
-        await prisma.impressora.create({data: data});
+        return await prisma.impressora.create({ data: data });
     };
 
     it('should list all impressoras', async () => {
-        const res = await request(server)
-            .post('/')
-            .send(defaultPrinter);
-        createdPrinterId = res.body.data.id;
+        const printerData = await criaImpressora(defaultPrinter);
+        const createdPrinterId = printerData.id;
+
 
         const result = await listImpressoras();
         expect(Array.isArray(result)).toBe(true);
     });
 
     it('should find an impressora by ID', async () => {
+        const printerData = await criaImpressora(defaultPrinter);
+        const createdPrinterId = printerData.id;
+
         const result = await findImpressora(createdPrinterId);
         expect(result).not.toBe(false);
         expect(result).toHaveProperty('id', createdPrinterId);
     });
 
     it('should find an impressora by numSerie', async () => {
+        const printerData = await criaImpressora(defaultPrinter);
+        const createdPrinterId = printerData.id;
+
         const result = await findImpressoraByNumSerie(defaultPrinter.numSerie);
         expect(result).not.toBe(false);
         expect(result).toHaveProperty('numSerie', defaultPrinter.numSerie);
     });
 
     it('should update an impressora', async () => {
+        const printerData = await criaImpressora(defaultPrinter);
+        const createdPrinterId = printerData.id;
+
         const updateData = { localizacao: 'Updated Location' };
         const result = await updateImpressora(createdPrinterId, updateData);
         expect(result).not.toBe(false);
@@ -109,52 +111,23 @@ describe('Impressora Service Integration Tests', () => {
     });
 
     it('should deactivate (delete) an impressora', async () => {
+        const printerData = await criaImpressora(defaultPrinter);
+        const createdPrinterId = printerData.id;
+
         const result = await deleteImpressora(createdPrinterId);
         expect(result).not.toBe(false);
         expect(result).toHaveProperty('ativo', false);
     });
 
     it('should update printer counter', async () => {
-      const updateData = { 
-        contadorAtualPB: 1300,
-        contadorAtualCor: 700, 
-      };
-      const result = await updateContadores(createdPrinterId, updateData);
-      expect(result).not.toBe(false);
-  });
-});
+        const printerData = await criaImpressora(defaultPrinter);
+        const createdPrinterId = printerData.id;
 
-    it("should update printer counters", async () => {
-        await criaPadrao("modelo1");
-        const padrao = await prisma.padrao.findFirst({where: {modelo:"modelo1"}});
-        const modeloId = padrao.id;
-
-        let impressoraData = defaultPrinter;
-        impressoraData.modeloId = modeloId.toString();
-        await criaImpressora(impressoraData);
-        const impressora = await prisma.impressora.findFirst({where: {modeloId: modeloId.toString()}});
-        console.log(impressora)
-        const impressoraId = impressora.id;
-            
-        const mockVarbinds = [
-            { oid: "1.3.6.1.2.1.1.1.0", value: "modelo" },
-            { oid: "1.3.6.1.2.1.43.5.1.1.17.1", value: "123456" },
-            { oid: "1.3.6.1.2.1.43.5.1.1.16.1", value: "1.1.0" },
-            { oid: "1.3.6.1.2.1.1.3.0", value: 10 },
-            { oid: "1.3.6.1.2.1.43.10.2.1.4.1.1", value: 0 },
-            { oid: "1.3.6.1.2.1.43.10.2.1.4.1.2", value: 10_001 },
-            { oid: "1.3.6.1.2.1.43.10.2.1.4.1.4", value: 10_001 }
-        ];
-    
-        snmp.isVarbindError.mockReturnValue(false);
-        snmp.createSession().get.mockImplementation((oids, callback) => {
-          callback(null, mockVarbinds);
-        });
-    
-        await updatePrinterCounts();
-
-        const impressoraAtualizada = await prisma.impressora.findUnique({where: {id: impressoraId}});
-
-        expect(impressoraAtualizada.contadorAtualPB).toBe(10_001);
+        const updateData = {
+            contadorAtualPB: 1300,
+            contadorAtualCor: 700,
+        };
+        const result = await updateContadores(createdPrinterId, updateData);
+        expect(result).not.toBe(false);
     });
 });

@@ -1,5 +1,5 @@
 // getSnmpData.test.js
-const { getSnmpData } = require('../../src/snmp/netsnmpUtils');
+const { getSnmpData } = require('../../src/snmp/snmpUtils');
 const snmp = require("net-snmp");
 
 jest.mock('net-snmp', () => {
