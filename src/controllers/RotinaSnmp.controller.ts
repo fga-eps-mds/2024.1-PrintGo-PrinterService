@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { createRotina, deleteRotina, getRotinaById, listRotinas, updateRotina } from '../repository/RotinaSnmp.repository';
-import { rotinaSnmpValidator } from './validator/RotinaSnmp.validator';
+import { rotinaSnmpValidator, updateRotinaSnmpValidator } from './validator/RotinaSnmp.validator';
 import { startCronJob, stopCronJob } from '../snmp/cronJobs';
 
 export default {
@@ -48,7 +48,7 @@ export default {
 
     async updateRotina(request: Request, response: Response) {
         const { id } = request.params;
-        const { error, value } = rotinaSnmpValidator.validate(request.body);
+        const { error, value } = updateRotinaSnmpValidator.validate(request.body);
         if (error) {
             return response.status(400).json({ error: error.message });
         }
