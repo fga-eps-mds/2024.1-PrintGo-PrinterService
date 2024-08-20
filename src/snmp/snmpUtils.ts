@@ -6,7 +6,7 @@ import { getById as getPadrao } from '../repository/Padrao.repository';
 export const coletaSnmpRotina = async (rotina: RotinaSnmp) => {
     const impressoras = await listImpressorasLocalizacao(rotina.localizacao);
     if (!impressoras) {
-        console.log("Falha na coleta");
+        console.log("Falha na listagem de impressoras");
         return;
     }
 
@@ -42,7 +42,6 @@ export const coletaSnmpRotina = async (rotina: RotinaSnmp) => {
             contadorAtualPB: parseInt(snmpData[oids.oidCopiasPB] || '0', 10),
             contadorAtualCor: parseInt(snmpData[oids.oidCopiasCor] || '0', 10)
         };
-        console.log("ATUALIZANDO======", counts);
         await updateImpressora(impressora.id, counts);
     }
 }
