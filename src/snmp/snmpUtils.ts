@@ -2,6 +2,7 @@ import snmp from 'net-snmp';
 import { RotinaSnmp } from '../types/RotinaSnmp.type';
 import { listImpressorasLocalizacao, updateImpressora } from '../repository/Impressora.repository';
 import { getById as getPadrao } from '../repository/Padrao.repository';
+import { Impressora } from '../types/Impressora.type';
 
 export const coletaSnmpRotina = async (rotina: RotinaSnmp) => {
     const impressoras = await listImpressorasLocalizacao(rotina.localizacao);
@@ -10,6 +11,10 @@ export const coletaSnmpRotina = async (rotina: RotinaSnmp) => {
         return;
     }
 
+    await coletaSnmpAtualizaContadores(impressoras)
+}
+
+const coletaSnmpAtualizaContadores = async (impressoras: Impressora[]) => {
     for (const impressora of impressoras) {
         const modeloId = parseInt(impressora.modeloId, 10);
         if (isNaN(modeloId)) {
@@ -46,7 +51,7 @@ export const coletaSnmpRotina = async (rotina: RotinaSnmp) => {
     }
 }
 
-const getSnmpData = async (host, oids) => {
+export const getSnmpData = async (host, oids) => {
     return new Promise((resolve, reject) => {
         const community = "public";
         const session = snmp.createSession(host, community);
