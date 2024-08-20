@@ -3,6 +3,7 @@ import { RotinaSnmp } from '../types/RotinaSnmp.type';
 import { listImpressorasLocalizacao, updateImpressora } from '../repository/Impressora.repository';
 import { getById as getPadrao } from '../repository/Padrao.repository';
 import { Impressora } from '../types/Impressora.type';
+import { updateRotina } from '../repository/RotinaSnmp.repository';
 
 export const coletaSnmpRotina = async (rotina: RotinaSnmp) => {
     const impressoras = await listImpressorasLocalizacao(rotina.localizacao);
@@ -11,7 +12,9 @@ export const coletaSnmpRotina = async (rotina: RotinaSnmp) => {
         return;
     }
 
-    await coletaSnmpAtualizaContadores(impressoras)
+    await coletaSnmpAtualizaContadores(impressoras);
+    const updateData: Partial<RotinaSnmp> = {dataUltimoUpdate: new Date()};
+    await updateRotina(rotina.id, updateData);
 }
 
 const coletaSnmpAtualizaContadores = async (impressoras: Impressora[]) => {
