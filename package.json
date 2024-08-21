@@ -37,7 +37,8 @@
         "joi": "^17.13.3",
         "jsonwebtoken": "^9.0.2",
         "npm": "^10.2.4",
-        "snmp-native": "^1.2.0"
+        "snmp-native": "^1.2.0",
+        "uuid": "^10.0.0"
     },
     "devDependencies": {
         "@babel/core": "^7.23.3",
