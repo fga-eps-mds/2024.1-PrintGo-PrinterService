@@ -73,7 +73,7 @@ export const getSnmpData = async (host, oids) => {
                 varbinds.forEach((vb) => {
                     if (snmp.isVarbindError(vb)) {
                         reject(snmp.varbindError(vb));
-                        session.close;
+                        session.close();
                         return;
                     } else {
                         result[vb.oid] = vb.value.toString();
