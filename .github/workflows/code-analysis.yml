@@ -38,11 +38,6 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-
       - name: Install Yarn
         run: npm install -g yarn
 
@@ -66,6 +61,11 @@ jobs:
           SMPT_MAIL: ${{secrets.SMPT_MAIL}}
           SMPT_PASSWORD: ${{secrets.SMPT_PASSWORD}}
 
+      - name: Set JAVA_HOME for SonarCloud
+        run: echo "JAVA_HOME=/opt/hostedtoolcache/Java_Adopt_jdk/17.0.12-7/x64" >> $GITHUB_ENV
+      - name: Check Java Version
+        run: java -version
+
       - name: Executa SonarCloud Scan
         if: ${{ always() }}
         uses: SonarSource/sonarcloud-github-action@v1.4
@@ -78,5 +78,6 @@ jobs:
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
         env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.12-7/x64
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
