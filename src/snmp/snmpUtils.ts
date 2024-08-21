@@ -6,9 +6,12 @@ import { Impressora } from '../types/Impressora.type';
 import { updateRotina } from '../repository/RotinaSnmp.repository';
 
 export const coletaSnmpRotina = async (rotina: RotinaSnmp) => {
-    const impressoras = await listImpressorasLocalizacao(rotina.localizacao);
-    if (!impressoras) {
+    const impressoras = await listImpressorasLocalizacao(rotina.localizacao, rotina.cidadeTodas, rotina.regionalTodas, rotina.unidadeTodas);
+    if (impressoras === false) {
         console.log("Falha na listagem de impressoras");
+        return;
+    }
+    if (impressoras.length == 0) {
         return;
     }
 
