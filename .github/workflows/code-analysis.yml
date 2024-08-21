@@ -71,6 +71,7 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@v1.4
         with:
           args: >
+            -X
             -Dsonar.projectKey=fga-eps-mds-1_2024-1-printgo-printerservice
             -Dsonar.organization=fga-eps-mds-1
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
