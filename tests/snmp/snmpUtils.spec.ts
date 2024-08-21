@@ -132,17 +132,41 @@ describe('coletaSnmpRotina', () => {
 
         await coletaSnmpRotina(rotinaData);
 
-        expect(mockListImpressorasLocalizacao).toHaveBeenCalledWith(rotinaData.localizacao);
+        expect(mockListImpressorasLocalizacao).toHaveBeenCalledWith(
+            rotinaData.localizacao,
+            rotinaData.cidadeTodas,
+            rotinaData.regionalTodas,
+            rotinaData.unidadeTodas
+        );
         expect(mockListImpressorasLocalizacao).toHaveBeenCalledTimes(1);
         expect(mockGetPadrao).toHaveBeenCalledWith(1);
     });
 
-    it('should handle the case where no printers are found', async () => {
-        mockListImpressorasLocalizacao.mockResolvedValue(null);
+    it('should handle the case where listing printer throws error', async () => {
+        mockListImpressorasLocalizacao.mockResolvedValue(false);
 
         await coletaSnmpRotina(rotinaData);
 
-        expect(mockListImpressorasLocalizacao).toHaveBeenCalledWith(rotinaData.localizacao);
+        expect(mockListImpressorasLocalizacao).toHaveBeenCalledWith(
+            rotinaData.localizacao,
+            rotinaData.cidadeTodas,
+            rotinaData.regionalTodas,
+            rotinaData.unidadeTodas
+        );
+        expect(mockGetPadrao).not.toHaveBeenCalled();
+    });
+
+    it('should handle the case where no printers are found', async () => {
+        mockListImpressorasLocalizacao.mockResolvedValue([]);
+
+        await coletaSnmpRotina(rotinaData);
+
+        expect(mockListImpressorasLocalizacao).toHaveBeenCalledWith(
+            rotinaData.localizacao,
+            rotinaData.cidadeTodas,
+            rotinaData.regionalTodas,
+            rotinaData.unidadeTodas
+        );
         expect(mockGetPadrao).not.toHaveBeenCalled();
     });
 });
