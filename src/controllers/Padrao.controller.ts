@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Padrao } from '../types/Padrao.type';
 import { listPadroes, createPadrao, editPadrao, desativarPadrao, getById, togglePadrao } from '../repository/Padrao.repository';
-import { createPadraoValidator } from './validators/Padrao.validator';
+import { createPadraoValidator } from './validator/Padrao.validator';
 
 
 export default {

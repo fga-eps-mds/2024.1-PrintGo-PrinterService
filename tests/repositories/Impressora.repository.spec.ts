@@ -1,11 +1,26 @@
-import { listImpressoras, findImpressora, findImpressoraByNumSerie, createImpressora, updateImpressora, deleteImpressora, updateContadores } from '../../src/repository/Impressora.repository';
+import { listImpressoras, findImpressora, findImpressoraByNumSerie, createImpressora, updateImpressora, deleteImpressora, updateContadores, listImpressorasLocalizacao } from '../../src/repository/Impressora.repository';
 import request from 'supertest';
 import { server } from '../../src/server';
+import { prisma } from '../../src/database';
+import { resolveSoa } from 'dns';
+import { Impressora } from '@prisma/client';
+const snmp = require("net-snmp");
 
 function generateRandomSerialNumber() {
     const randomNumber = Math.floor(Math.random() * 1000000000);
     return `${randomNumber}`;
 }
+
+jest.mock('net-snmp', () => {
+    return {
+        createSession: jest.fn().mockReturnValue({
+            get: jest.fn(),
+            close: jest.fn(),
+        }),
+        isVarbindError: jest.fn(),
+        varbindError: jest.fn()
+    };
+});
 
 describe('Impressora Service Integration Tests', () => {
     let defaultPrinter = {
@@ -25,35 +40,71 @@ describe('Impressora Service Integration Tests', () => {
         ativo: true,
     };
 
-    let createdPrinterId = 0;
+    const padraoExemplo = {
+        modelo: "Imprime Baixo 3000",
+        marca: "Epston",
+        colorido: false,
+        tipo: "Multifuncional laser colorido",
+        oidModelo: "1.3.6.1.2.1.1.1.0",
+        oidNumeroSerie: "1.3.6.1.2.1.43.5.1.1.17.1",
+        oidFirmware: "1.3.6.1.2.1.43.5.1.1.16.1",
+        oidTempoAtivo: "1.3.6.1.2.1.1.3.0",
+        oidDigitalizacoes: "1.3.6.1.2.1.43.10.2.1.4.1.1",
+        oidCopiasPB: "1.3.6.1.2.1.43.10.2.1.4.1.2",
+        oidTotalGeral: "1.3.6.1.2.1.43.10.2.1.4.1.4"
+    };
 
     afterAll(() => {
         server.close();
     });
 
+    afterEach(async () => {
+        await prisma.relatorio.deleteMany({});
+        await prisma.impressora.deleteMany({});
+        await prisma.padrao.deleteMany({});
+    });
+
+    const criaPadrao = async (modelo: string) => {
+        const dadosPadrao = padraoExemplo;
+        dadosPadrao.modelo = modelo;
+        await prisma.padrao.create({ data: dadosPadrao });
+    };
+
+    const criaImpressora = async (data) => {
+        return await prisma.impressora.create({ data: data });
+    };
+
     it('should list all impressoras', async () => {
-        const res = await request(server)
-            .post('/')
-            .send(defaultPrinter);
-        createdPrinterId = res.body.data.id;
+        const printerData = await criaImpressora(defaultPrinter);
+        const createdPrinterId = printerData.id;
+
 
         const result = await listImpressoras();
         expect(Array.isArray(result)).toBe(true);
     });
 
     it('should find an impressora by ID', async () => {
+        const printerData = await criaImpressora(defaultPrinter);
+        const createdPrinterId = printerData.id;
+
         const result = await findImpressora(createdPrinterId);
         expect(result).not.toBe(false);
         expect(result).toHaveProperty('id', createdPrinterId);
     });
 
     it('should find an impressora by numSerie', async () => {
+        const printerData = await criaImpressora(defaultPrinter);
+        const createdPrinterId = printerData.id;
+
         const result = await findImpressoraByNumSerie(defaultPrinter.numSerie);
         expect(result).not.toBe(false);
         expect(result).toHaveProperty('numSerie', defaultPrinter.numSerie);
     });
 
     it('should update an impressora', async () => {
+        const printerData = await criaImpressora(defaultPrinter);
+        const createdPrinterId = printerData.id;
+
         const updateData = { localizacao: 'Updated Location' };
         const result = await updateImpressora(createdPrinterId, updateData);
         expect(result).not.toBe(false);
@@ -61,18 +112,78 @@ describe('Impressora Service Integration Tests', () => {
     });
 
     it('should deactivate (delete) an impressora', async () => {
+        const printerData = await criaImpressora(defaultPrinter);
+        const createdPrinterId = printerData.id;
+
         const result = await deleteImpressora(createdPrinterId);
         expect(result).not.toBe(false);
         expect(result).toHaveProperty('ativo', false);
     });
 
     it('should update printer counter', async () => {
-      const updateData = { 
-        contadorAtualPB: 1300,
-        contadorAtualCor: 700, 
-      };
-      const result = await updateContadores(createdPrinterId, updateData);
-      expect(result).not.toBe(false);
-  });
-});
+        const printerData = await criaImpressora(defaultPrinter);
+        const createdPrinterId = printerData.id;
 
+        const updateData = {
+            contadorAtualPB: 1300,
+            contadorAtualCor: 700,
+        };
+        const result = await updateContadores(createdPrinterId, updateData);
+        expect(result).not.toBe(false);
+    });
+
+    it('should list printers by localization', async () => {
+        const printerData = await criaImpressora(defaultPrinter);
+        const localizacao = defaultPrinter.localizacao;
+
+        const result = await listImpressorasLocalizacao(localizacao);
+        expect(Array.isArray(result)).toBeTruthy();
+
+        const resultArray = result as Impressora[];
+        expect(resultArray.length).toBe(1);
+    });
+
+    it('should list printers by city', async () => {
+        const printerData = await criaImpressora(defaultPrinter);
+        const localizacao = defaultPrinter.localizacao;
+
+        const result = await listImpressorasLocalizacao(localizacao, true, false, false);
+        expect(Array.isArray(result)).toBeTruthy();
+
+        const resultArray = result as Impressora[];
+        expect(resultArray.length).toBe(1);
+    });
+
+    it('should list printers by regional', async () => {
+        const printerData = await criaImpressora(defaultPrinter);
+        const localizacao = defaultPrinter.localizacao;
+
+        const result = await listImpressorasLocalizacao(localizacao, true, true, false);
+        expect(Array.isArray(result)).toBeTruthy();
+
+        const resultArray = result as Impressora[];
+        expect(resultArray.length).toBe(1);
+    });
+
+    it('should list printers by unit', async () => {
+        const printerData = await criaImpressora(defaultPrinter);
+        const localizacao = defaultPrinter.localizacao;
+
+        const result = await listImpressorasLocalizacao(localizacao, true, true, true);
+        expect(Array.isArray(result)).toBeTruthy();
+
+        const resultArray = result as Impressora[];
+        expect(resultArray.length).toBe(1);
+    });
+
+    it('should list no printers by localization', async () => {
+        const printerData = await criaImpressora(defaultPrinter);
+        const localizacao = "A;B;C";
+
+        const result = await listImpressorasLocalizacao(localizacao);
+        expect(Array.isArray(result)).toBeTruthy();
+
+        const resultArray = result as Impressora[];
+        expect(resultArray.length).toBe(0);
+    });
+});

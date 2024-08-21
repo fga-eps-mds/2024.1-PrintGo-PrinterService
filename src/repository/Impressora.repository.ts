@@ -1,5 +1,6 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import { Impressora } from '../types/Impressora.type'
+import { getLocalizacaoQuery } from "../utils/utils";
 
 const impressoraClient = new PrismaClient().impressora;
 const prisma = new PrismaClient();
@@ -13,6 +14,29 @@ export const listImpressoras = async (): Promise<Impressora[] | false> => {
         return false;
     }
 };
+
+export const listImpressorasLocalizacao = async (
+    localizacao: string | null,
+    cidadeTodas: boolean = false,
+    regionalTodas: boolean = false,
+    unidadeTodas: boolean = false
+): Promise<Impressora[] | false> => {
+
+    const localizacaoQuery : string = getLocalizacaoQuery(localizacao, cidadeTodas, regionalTodas, unidadeTodas);
+
+    try {
+        const impressoras = await impressoraClient.findMany({
+            where: {
+                ativo: true,
+                localizacao: { startsWith: localizacaoQuery }
+            }
+        });
+        return impressoras;
+    } catch (error) {
+        console.error("Erro ao procurar impressoras: ", error);
+        return false;
+    }
+}
 
 export const listImpressorasRelatorio = async (): Promise<Impressora[] | false> => {
     try {
@@ -38,23 +62,23 @@ export const listImpressorasContract = async (contractId: string): Promise<Parti
                 numContrato: contractId,
             },
             select: {
-                    id: true,
-                    numSerie: true,
-                    contadorAtualPB: true,
-                    contadorAtualCor: true,
-                    contadorInstalacaoPB: true,
-                    contadorInstalacaoCor: true,
-                    contadorRetiradaPB: true,
-                    contadorRetiradaCor: true,
-                    relatorioLocadora: {
-                        select: {
-                            contadorPB: true,
-                            contadorCor: true,
-                            contadorTotal: true,
-                        },
+                id: true,
+                numSerie: true,
+                contadorAtualPB: true,
+                contadorAtualCor: true,
+                contadorInstalacaoPB: true,
+                contadorInstalacaoCor: true,
+                contadorRetiradaPB: true,
+                contadorRetiradaCor: true,
+                relatorioLocadora: {
+                    select: {
+                        contadorPB: true,
+                        contadorCor: true,
+                        contadorTotal: true,
                     },
                 },
-            });
+            },
+        });
         return impressoras;
     } catch (error) {
         console.error("Erro ao procurar impressoras: ", error);
@@ -178,11 +202,9 @@ export const deleteImpressora = async (id: number): Promise<Impressora | false> 
         console.error("Erro ao desativar impressora:", error);
         return false;
     }
-
-    
 };
 
-export const updateContadores = async (id: number, contadores: Partial<Impressora> ): Promise<Impressora | false> => {
+export const updateContadores = async (id: number, contadores: Partial<Impressora>): Promise<Impressora | false> => {
     try {
         const updatedImpressora = await impressoraClient.update({
             where: { id },

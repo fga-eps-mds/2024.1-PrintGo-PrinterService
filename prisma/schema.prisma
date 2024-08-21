@@ -76,3 +76,15 @@ model RelatorioLocadora {
   contadorCor       Int
   contadorTotal     Int
 }
+
+model RotinaSnmp {
+  id                  Int       @id @default(autoincrement())
+  localizacao         String?
+  dataCriado          DateTime  @default(now())
+  dataUltimoUpdate    DateTime?
+  cronExpression      String
+  ativo               Boolean
+  cidadeTodas         Boolean?
+  regionalTodas       Boolean?
+  unidadeTodas        Boolean?
+}

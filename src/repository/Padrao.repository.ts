@@ -29,20 +29,18 @@ export const listPadroes = async (): Promise<Padrao[] | false> => {
     }
 }
 
-export const getById = async (id: number)=> {
+export const getById = async (id: number): Promise<Padrao | false> => {
     try {
-        const padroes = await padraoClient.findMany({
-            where:{
-                id:id,
-            },
+        const padrao = await padraoClient.findUnique({
+            where: { id }
         });
-        return padroes.length > 0 ? padroes[0] : false;
-    }
-    catch (error) {
-        console.error("Erro ao buscar padrões de impressora: ", error);
+
+        return padrao || false;
+    } catch (error) {
+        console.error("Erro ao procurar padrão por ID:", error);
         return false;
     }
-}
+};
 
 export const createPadrao  = async (padrao:Padrao): Promise<Padrao | false> =>{
     try {
