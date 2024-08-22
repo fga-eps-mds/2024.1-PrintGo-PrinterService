@@ -34,20 +34,57 @@ model Padrao {
 }
 
 model Impressora {
-    id Int @id @default(autoincrement())
-    numContrato String
-    numSerie String @unique
-    enderecoIp String
-    estaNaRede Boolean
-    dataInstalacao DateTime
-    dataRetirada DateTime?
-    ativo Boolean
-    contadorInstalacaoPB Int
-    contadorInstalacaoCor Int
-    contadorAtualPB Int
-    contadorAtualCor Int
-    contadorRetiradaPB Int
-    contadorRetiradaCor Int
-    localizacao String
-    modeloId String 
+  id                        Int        @id @default(autoincrement())
+  numContrato               String
+  numSerie                  String     @unique
+  enderecoIp                String
+  estaNaRede                Boolean
+  dataInstalacao            DateTime
+  dataRetirada              DateTime?
+  dataContador              DateTime?
+  ativo                     Boolean
+  contadorInstalacaoPB      Int
+  contadorInstalacaoCor     Int
+  contadorAtualPB           Int
+  contadorAtualCor          Int
+  contadorRetiradaPB        Int
+  contadorRetiradaCor       Int
+  localizacao               String
+  modeloId                  String
+  relatorio                 Relatorio?
+  relatorioLocadora         RelatorioLocadora?
+}
+
+model Relatorio {
+  id                Int        @id @default(autoincrement())
+  impressora        Impressora @relation(fields: [impressoraId], references: [id])
+  impressoraId      Int        @unique
+  contadorPB        Int
+  contadorPBDiff    Int
+  contadorCor       Int
+  contadorCorDiff   Int
+  ultimoResultado   Int
+  resultadoAtual    Int
+  ultimaAtualizacao DateTime
+}
+
+model RelatorioLocadora {
+  id                Int        @id @default(autoincrement())
+  impressora        Impressora @relation(fields: [impressoraId], references: [id])
+  impressoraId      Int        @unique
+  contadorPB        Int
+  contadorCor       Int
+  contadorTotal     Int
+}
+
+model RotinaSnmp {
+  id                  Int       @id @default(autoincrement())
+  localizacao         String?
+  dataCriado          DateTime  @default(now())
+  dataUltimoUpdate    DateTime?
+  cronExpression      String
+  ativo               Boolean
+  cidadeTodas         Boolean?
+  regionalTodas       Boolean?
+  unidadeTodas        Boolean?
 }

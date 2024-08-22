@@ -1,5 +1,12 @@
 import Joi from 'joi';
 
+const contadorValidation = Joi.number().integer().optional().custom((value, helpers) => {
+  if (value < 0) {
+      return helpers.message({custom: 'O numero do contador deve ser maior que zero!'});
+  }
+  return value;
+}).default(0);
+
 export const createImpressoraValidator = Joi.object({
     numContrato: Joi.string().required(),
     numSerie: Joi.string().required(),
@@ -84,4 +91,10 @@ export const updateImpressoraValidator = Joi.object({
         return value;
     }),
     modeloId: Joi.string().optional(),
+});
+
+export const updateContadoresValidator = Joi.object({
+    contadorAtualPB: contadorValidation,
+    contadorAtualCor: contadorValidation,
+    dataContador: Joi.date().iso().required()
 });

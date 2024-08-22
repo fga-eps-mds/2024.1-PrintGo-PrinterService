@@ -4,7 +4,9 @@ services:
   printer-api:
     container_name: printer-api
     restart: on-failure
-    build: .
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.development
     environment:
       DATABASE_URL: ${DOCKER_URL}
       NODE_ENV: development
@@ -13,13 +15,14 @@ services:
       - .:/src
     ports:
       - "8001:8001"
+      - "161:161/udp"
     env_file:
       - .env
     networks:
       - printgo_network
     depends_on:
       - postgres-printgo
-    command: ["sh", "-c", "npx prisma db push && yarn start"]
+    command: ["sh", "-c", "npx prisma db push && yarn dev"]
 
   postgres-printgo:
     image: postgres:13
@@ -38,4 +41,3 @@ networks:
     name: printgo_network
     driver: bridge
     external: true
-
