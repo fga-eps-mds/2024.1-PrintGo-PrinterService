@@ -88,3 +88,18 @@ model RotinaSnmp {
   regionalTodas       Boolean?
   unidadeTodas        Boolean?
 }
+
+model RelatorioGeral {
+  id                      Int       @id @default(autoincrement())
+  localizacao             String?
+  contrato                String?   
+  impressorasPB           Int
+  impressorasCor          Int
+  impressorasAtivas       Int
+  impressorasInativas     Int
+  dataRelatorio           DateTime
+  contadoresPB            Int
+  contadoresPBDiff        Int
+  contadoresCor           Int
+  contadoresCorDiff       Int
+}
