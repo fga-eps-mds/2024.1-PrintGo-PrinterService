@@ -47,7 +47,13 @@ const coletaSnmpAtualizaContadores = async (impressoras: Impressora[]) => {
 
         const host = impressora.enderecoIp;
         const oidsArray = Object.values(oids).filter(oid => oid !== null);
-        const snmpData = await getSnmpData(host, oidsArray);
+        try {
+            var snmpData = await getSnmpData(host, oidsArray);            
+        }
+        catch (error) {
+            console.log(`Falha ao coletar dados SNMP da impressora ${impressora.id}. ${error}`);
+            continue;
+        }
 
         const counts = {
             contadorAtualPB: parseInt(snmpData[oids.oidCopiasPB] || '0', 10),
