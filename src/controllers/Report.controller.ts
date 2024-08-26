@@ -42,7 +42,6 @@ export default {
                 return response.status(500).json({ error: "Erro ao gerar o relatório" });
             }
 
-            console.log(sendFile(response, filePath, result.numSerie));
             return sendFile(response, filePath, result.numSerie);
         }
         catch (error) {
