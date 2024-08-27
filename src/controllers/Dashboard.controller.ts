@@ -30,5 +30,66 @@ export default {
                 message: "Erro ao calcular impressões totais.",
             });
         }
+    },
+
+    async getColorPrintersCount(request: Request, response: Response) {
+        try {
+            const colorPrintersCount = await prisma.impressora.count({
+                where: {
+                    modeloId: {
+                        in: await prisma.padrao.findMany({
+                            where: {
+                                colorido: true,
+                            },
+                            select: {
+                                modelo: true
+                            }
+                        }).then(result => result.map(padrao => padrao.modelo))
+                    }
+                }
+            });
+    
+            return response.status(200).json({
+                colorPrintersCount
+            });
+        } catch (error) {
+            return response.status(500).json({
+                error: true,
+                message: "Erro ao calcular o número de impressoras coloridas.",
+            });
+        }
+    },
+
+    async getPbPrintersCount(request: Request, response: Response) {
+        try {
+            const PbPrintersCount = await prisma.impressora.count({
+                where: {
+                    modeloId: {
+                        in: await prisma.padrao.findMany({
+                            where: {
+                                colorido: false,
+                            },
+                            select: {
+                                modelo: true
+                            }
+                        }).then(result => result.map(padrao => padrao.modelo))
+                    }
+                }
+            });
+    
+            return response.status(200).json({
+                PbPrintersCount
+            });
+        } catch (error) {
+            return response.status(500).json({
+                error: true,
+                message: "Erro ao calcular o número de impressoras pretas e brancas.",
+            });
+        }
     }
-}
+    
+    
+    }
+    
+    
+
