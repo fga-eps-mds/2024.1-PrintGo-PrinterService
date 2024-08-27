@@ -113,7 +113,33 @@ export default {
                 message: "Erro ao calcular a soma dos contadores por localização.",
             });
         }
+    },
+
+    async getEquipmentCountByLocation(request: Request, response: Response) {
+        try {
+            const equipmentCountByLocation = await prisma.impressora.groupBy({
+                by: ['localizacao'],
+                _count: {
+                    id: true
+                }
+            });
+    
+            const result = equipmentCountByLocation.map(location => ({
+                localizacao: location.localizacao,
+                totalEquipamentos: location._count.id
+            }));
+    
+            return response.status(200).json({
+                data: result
+            });
+        } catch (error) {
+            return response.status(500).json({
+                error: true,
+                message: "Erro ao contar o número de equipamentos por localização.",
+            });
+        }
     }
+    
     
     
     }

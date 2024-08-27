@@ -8,5 +8,6 @@ dashboardRoutes.get('/total-impressoes', requestHandler(DashboardController.getT
 dashboardRoutes.get('/color-printers', requestHandler(DashboardController.getColorPrintersCount));
 dashboardRoutes.get('/pb-printers', requestHandler(DashboardController.getPbPrintersCount));
 dashboardRoutes.get('/impressions-by-location', requestHandler(DashboardController.getSumOfCountersByLocation));
+dashboardRoutes.get('/equipment-by-location', requestHandler(DashboardController.getEquipmentCountByLocation));
 
 export default dashboardRoutes;
