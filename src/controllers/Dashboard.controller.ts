@@ -86,6 +86,33 @@ export default {
                 message: "Erro ao calcular o número de impressoras pretas e brancas.",
             });
         }
+    },
+
+    async getSumOfCountersByLocation(request: Request, response: Response) {
+        try {
+            const countersByLocation = await prisma.impressora.groupBy({
+                by: ['localizacao'],
+                _sum: {
+                    contadorAtualPB: true,
+                    contadorAtualCor: true
+                }
+            });
+    
+            const result = countersByLocation.map(location => ({
+                localizacao: location.localizacao,
+                totalPB: location._sum.contadorAtualPB??  0,
+                totalCor: location._sum.contadorAtualCor??  0,
+            }));
+    
+            return response.status(200).json({
+                data: result
+            });
+        } catch (error) {
+            return response.status(500).json({
+                error: true,
+                message: "Erro ao calcular a soma dos contadores por localização.",
+            });
+        }
     }
     
     
