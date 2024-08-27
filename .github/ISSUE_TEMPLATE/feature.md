@@ -1,13 +1,13 @@
 ---
 name: Feature
 about: Nova feature a ser implementada
-title: ''
+title: "[FEATURE]"
 labels: feature
 assignees: ''
 
 ---
 
-**Descrição.**
+**Descrição**
 
 **Tasks**
 
@@ -16,3 +16,5 @@ assignees: ''
 
 
 **Historia de usuário relacionada**
+
+- Numero-da-US (Link para a US)
