@@ -292,10 +292,6 @@ export const countColorPrinters = async (colorModelIds: string[]): Promise<numbe
     }
 };
 
-
-
-
-
 export const countPbPrinters = async (pbModelIds: string[]): Promise<number> => {
     try {
 
@@ -311,3 +307,22 @@ export const countPbPrinters = async (pbModelIds: string[]): Promise<number> => 
         throw new Error("Erro ao contar impressoras preto e branco.");
     }
 };
+
+export const getSumOfCountersByImpressionType = async (): Promise<{ totalPB: number; totalCor: number }> => {
+    try {
+        const countersByPrinterType = await prisma.impressora.aggregate({
+            _sum: {
+                contadorAtualPB: true,
+                contadorAtualCor: true
+            }
+        });
+
+        return{
+            totalPB: countersByPrinterType._sum.contadorAtualPB ?? 0,
+            totalCor: countersByPrinterType._sum.contadorAtualCor ?? 0
+        };
+    } catch (error) {
+        console.error("Erro ao calcular a soma dos contadores por tipo de impressora:", error);
+        throw new Error("Erro ao calcular a soma dos contadores por tipo de impressora.");
+    }
+}

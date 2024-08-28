@@ -4,7 +4,8 @@ import {
     getSumOfCountersByLocation,
     getEquipmentCountByLocation,
     countColorPrinters,
-    countPbPrinters
+    countPbPrinters,
+    getSumOfCountersByImpressionType
 } from "../repository/Impressora.repository";
 import { getColorPrinterModelIds, getPbPrinterModelIds } from "../repository/Padrao.repository";
 
@@ -75,5 +76,17 @@ export default {
                 message: "Erro ao contar o número de equipamentos por localização.",
             });
         }
-    }
+    },
+
+    async getSumOfCountersByImpressionType(request: Request, response: Response) {
+        try {
+            const result = await getSumOfCountersByImpressionType();
+            return response.status(200).json(result);
+        } catch (error) {
+            return response.status(500).json({
+                error: true,
+                message: "Erro ao calcular a soma total dos contadores.",
+            }); 
+        }
+    },
 }
