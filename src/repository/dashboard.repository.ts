@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma } from "@prisma/client";
+import { getColorPrinterModelIds, getPbPrinterModelIds } from "./Padrao.repository";
 
 
 const prisma = new PrismaClient();
@@ -263,4 +264,54 @@ export const getFiltroOpcoes = async (): Promise<{ cidades: string[], regionais:
         console.error("Erro ao buscar opções de filtro:", error);
         throw new Error("Erro ao buscar opções de filtro.");
     }
+
+
 };
+export const getDashboardData = async (): Promise<{
+    impressoras: {
+        localizacao: string;
+        dataContador: Date | null;
+        contadorAtualPB: number;
+        contadorAtualCor: number;
+        modeloId: string;
+    }[];
+    totalColorPrinters: number;
+    totalPbPrinters: number;
+}> => {
+    try {
+        // Obtém IDs de modelos coloridos e preto e branco
+        const colorModelIds = await getColorPrinterModelIds();
+        const pbModelIds = await getPbPrinterModelIds();
+
+        // Busca todas as impressoras
+        const impressoras = await prisma.impressora.findMany({
+            select: {
+                localizacao: true,
+                dataContador: true,
+                contadorAtualPB: true,
+                contadorAtualCor: true,
+                modeloId: true,
+            }
+        });
+
+        // Contagem de impressoras coloridas
+        const totalColorPrinters = impressoras.filter(impressora => 
+            colorModelIds.includes(impressora.modeloId)
+        ).length;
+
+        // Contagem de impressoras PB
+        const totalPbPrinters = impressoras.filter(impressora => 
+            pbModelIds.includes(impressora.modeloId)
+        ).length;
+
+        return {
+            impressoras,
+            totalColorPrinters,
+            totalPbPrinters
+        };
+    } catch (error) {
+        console.error("Erro ao buscar os dados do dashboard:", error);
+        throw new Error("Erro ao buscar os dados do dashboard.");
+    }
+};
+

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { request, Request, response, Response } from "express";
 import {
     getTotalImpressions,
     getEquipmentCountByLocation,
@@ -6,7 +6,8 @@ import {
     countPbPrinters,
     getSumOfCountersByImpressionType,
     getFiltroOpcoes,
-    getAllPrintersData
+    getAllPrintersData,
+    getDashboardData
 } from "../repository/dashboard.repository";
 import { getColorPrinterModelIds, getPbPrinterModelIds } from "../repository/Padrao.repository";
 
@@ -119,4 +120,22 @@ export default {
             });
         }
     },
+    async getDashboardData(request: Request, response: Response) {
+        try {
+            const dashboardData = await getDashboardData();
+            const colorModelIds = await getColorPrinterModelIds();
+            const pbModelIds = await getPbPrinterModelIds();
+    
+            return response.status(200).json({
+                ...dashboardData,
+                colorModelIds,
+                pbModelIds
+            });
+        } catch (error) {
+            return response.status(500).json({
+                error: true,
+                message: "Erro ao buscar os dados do dashboard.",
+            });
+        }
+    }
 }

@@ -10,5 +10,6 @@ dashboardRoutes.get('/all-printers-data', requestHandler(DashboardController.get
 dashboardRoutes.get('/equipment-by-location', requestHandler(DashboardController.getEquipmentCountByLocation));
 dashboardRoutes.get('/counter-by-type', requestHandler(DashboardController.getSumOfCountersByImpressionType));
 dashboardRoutes.get('/filtro-opcoes', requestHandler(DashboardController.getFiltroOpcoes));
+dashboardRoutes.get('/dashboard-data', requestHandler(DashboardController.getDashboardData));
 
 export default dashboardRoutes;
