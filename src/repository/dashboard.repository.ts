@@ -228,29 +228,36 @@ export const getSumOfCountersByImpressionType = async (): Promise<{ totalPB: num
         throw new Error("Erro ao calcular a soma dos contadores por tipo de impressora.");
     }
 }
-export const getFiltroOpcoes = async (): Promise<{ cidades: string[], regionais: string[], unidades: string[] }> => {
+export const getFiltroOpcoes = async (): Promise<{ cidades: string[], regionais: string[], unidades: string[], periodos: string[] }> => {
     try {
         const impressoras = await prisma.impressora.findMany({
             select: {
                 localizacao: true,
+                dataContador: true,
             },
         });
 
         const cidades = new Set<string>();
         const regionais = new Set<string>();
         const unidades = new Set<string>();
+        const periodos = new Set<string>();
 
         impressoras.forEach(impressora => {
             const [cidade, regional, unidade] = impressora.localizacao.split(';');
             if (cidade) cidades.add(cidade.trim());
             if (regional) regionais.add(regional.trim());
             if (unidade) unidades.add(unidade.trim());
+            if (impressora.dataContador) {
+                const periodo = impressora.dataContador.toISOString().slice(0, 7); 
+                periodos.add(periodo);
+            }
         });
 
         return {
             cidades: Array.from(cidades),
             regionais: Array.from(regionais),
             unidades: Array.from(unidades),
+            periodos: Array.from(periodos).sort((a, b) => b.localeCompare(a)),
         };
     } catch (error) {
         console.error("Erro ao buscar opções de filtro:", error);
