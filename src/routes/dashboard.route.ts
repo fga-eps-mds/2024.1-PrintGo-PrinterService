@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import ImpressoraController from '../controllers/Impressora.controller';
 import { requestHandler } from '../middlewares/requestWrapper.adapter';
 import DashboardController from '../controllers/Dashboard.controller';
 

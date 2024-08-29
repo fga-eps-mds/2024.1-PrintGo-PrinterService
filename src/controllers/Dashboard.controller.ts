@@ -6,7 +6,7 @@ import {
     countColorPrinters,
     countPbPrinters,
     getSumOfCountersByImpressionType
-} from "../repository/Impressora.repository";
+} from "../repository/dashboard.repository";
 import { getColorPrinterModelIds, getPbPrinterModelIds } from "../repository/Padrao.repository";
 
 export default {
