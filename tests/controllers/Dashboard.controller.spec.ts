@@ -2,12 +2,12 @@ import request from 'supertest';
 import express from 'express';
 import { prisma } from '../../src/database';
 import dashboardRoutes from '../../src/routes/dashboard.route';
-import * as dashboardRepository from '../../src/repository/dashboard.repository'; // Importe o repositório
+import * as dashboardRepository from '../../src/repository/dashboard.repository'; 
 
 describe("Dashboard Controller", () => {
     const app = express();
     app.use(express.json());
-    app.use('/dashboard', dashboardRoutes); // Adiciona manualmente as rotas
+    app.use('/dashboard', dashboardRoutes); 
 
     afterEach(async () => {
         await prisma.relatorio.deleteMany({});
@@ -15,13 +15,16 @@ describe("Dashboard Controller", () => {
         await prisma.padrao.deleteMany({});
     });
 
-    const uniqueNumSerie = () => `NUMSERIE_${Math.random().toString(36).substring(2, 15)}`;
+    function generateRandomSerialNumber() {
+        const randomNumber = Math.floor(Math.random() * 1000000000);
+        return `${randomNumber}`;
+    }
 
     const defaultPrinter = {
         modeloId: "modeloXYZ",
         enderecoIp: "192.168.1.100",
         numContrato: "12345",
-        numSerie: uniqueNumSerie(),
+        numSerie: generateRandomSerialNumber(),
         estaNaRede: true,
         localizacao: "Goiânia;Workstation A;Workstation B",
         dataInstalacao: "2024-01-01T00:00:00.000Z",
@@ -50,8 +53,8 @@ describe("Dashboard Controller", () => {
 
     describe("GET /dashboard/filtro-opcoes", () => {
         it("should return the filter options", async () => {
-            const printer1 = { ...defaultPrinter, numSerie: uniqueNumSerie(), dataContador: new Date('2024-08-01') };
-            const printer2 = { ...defaultPrinter, numSerie: uniqueNumSerie(), dataContador: new Date('2024-07-01') };
+            const printer1 = { ...defaultPrinter, numSerie: generateRandomSerialNumber(), dataContador: new Date('2024-08-01') };
+            const printer2 = { ...defaultPrinter, numSerie: generateRandomSerialNumber(), dataContador: new Date('2024-07-01') };
 
             await prisma.impressora.createMany({
                 data: [printer1, printer2],
@@ -92,9 +95,9 @@ describe("Dashboard Controller", () => {
                 data: [padraoColor, padraoPB],
             });
 
-            const printer1 = { ...defaultPrinter, numSerie: uniqueNumSerie(), modeloId: "colorModel" };
-            const printer2 = { ...defaultPrinter, numSerie: uniqueNumSerie(), modeloId: "pbModel" };
-            const printer3 = { ...defaultPrinter, numSerie: uniqueNumSerie(), modeloId: "pbModel" };
+            const printer1 = { ...defaultPrinter, numSerie: generateRandomSerialNumber(), modeloId: "colorModel" };
+            const printer2 = { ...defaultPrinter, numSerie: generateRandomSerialNumber(), modeloId: "pbModel" };
+            const printer3 = { ...defaultPrinter, numSerie: generateRandomSerialNumber(), modeloId: "pbModel" };
 
             await prisma.impressora.createMany({
                 data: [printer1, printer2, printer3],
