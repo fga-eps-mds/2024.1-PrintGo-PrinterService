@@ -2,7 +2,7 @@ import request from 'supertest';
 import express from 'express';
 import { prisma } from '../../src/database';
 import dashboardRoutes from '../../src/routes/dashboard.route';
-import * as dashboardRepository from '../../src/repository/dashboard.repository'; 
+import * as dashboardRepository from '../../src/repository/Impressora.repository'; 
 
 describe("Dashboard Controller", () => {
     const app = express();

@@ -4,10 +4,11 @@ import { getLocalizacaoQuery } from "../utils/utils";
 import { getPrinterModelIdsByColor } from "./Padrao.repository";
 
 const prisma = new PrismaClient();
+const impressoraClient = new PrismaClient().impressora;
 
 export const listImpressoras = async (): Promise<Impressora[] | false> => {
     try {
-        const impressoras = await prisma.impressora.findMany();
+        const impressoras = await impressoraClient.findMany();
         return impressoras;
     } catch (error) {
         console.error("Erro ao procurar impressoras: ", error);
@@ -25,7 +26,7 @@ export const listImpressorasLocalizacao = async (
     const localizacaoQuery: string = getLocalizacaoQuery(localizacao, cidadeTodas, regionalTodas, unidadeTodas);
 
     try {
-        const impressoras = await prisma.impressora.findMany({
+        const impressoras = await impressoraClient.findMany({
             where: {
                 ativo: true,
                 localizacao: { startsWith: localizacaoQuery }
@@ -40,7 +41,7 @@ export const listImpressorasLocalizacao = async (
 
 export const listImpressorasRelatorio = async (): Promise<Impressora[] | false> => {
     try {
-        const impressoras = await prisma.impressora.findMany({
+        const impressoras = await impressoraClient.findMany({
             where: {
                 ativo: true,
             },
@@ -57,7 +58,7 @@ export const listImpressorasRelatorio = async (): Promise<Impressora[] | false> 
 
 export const listImpressorasContract = async (contractId: string): Promise<Partial<Impressora>[] | false> => {
     try {
-        const impressoras = await prisma.impressora.findMany({
+        const impressoras = await impressoraClient.findMany({
             where: {
                 numContrato: contractId,
             },
@@ -88,7 +89,7 @@ export const listImpressorasContract = async (contractId: string): Promise<Parti
 
 export const findImpressora = async (id: number): Promise<Impressora | false> => {
     try {
-        const impressora = await prisma.impressora.findUnique({ where: { id } });
+        const impressora = await impressoraClient.findUnique({ where: { id } });
         return impressora;
     } catch (error) {
         console.error("Erro ao procurar impressora única:", error);
@@ -98,7 +99,7 @@ export const findImpressora = async (id: number): Promise<Impressora | false> =>
 
 export const findImpressoraWithReport = async (id: number): Promise<Impressora | false> => {
     try {
-        const impressora = await prisma.impressora.findUnique({ where: { id }, include: { relatorio: true } });
+        const impressora = await impressoraClient.findUnique({ where: { id }, include: { relatorio: true } });
         return impressora;
     } catch (error) {
         console.error("Erro ao procurar impressora única:", error);
@@ -108,7 +109,7 @@ export const findImpressoraWithReport = async (id: number): Promise<Impressora |
 
 export const findImpressoraByNumSerie = async (numSerie: string): Promise<Impressora | false> => {
     try {
-        const impressora = await prisma.impressora.findUnique({ where: { numSerie } });
+        const impressora = await impressoraClient.findUnique({ where: { numSerie } });
         return impressora;
     } catch (error) {
         console.error("Erro ao procurar impressora única:", error);
@@ -137,7 +138,7 @@ export const createImpressora = async (impressoraDTO: Impressora): Promise<Impre
 
     try {
         return await prisma.$transaction(async (prisma) => {
-            const impressora = await prisma.impressora.create({
+            const impressora = await impressoraClient.create({
                 data: {
                     numContrato,
                     numSerie,
@@ -180,7 +181,7 @@ export const createImpressora = async (impressoraDTO: Impressora): Promise<Impre
 
 export const updateImpressora = async (id: number, data: Partial<Impressora>): Promise<Impressora | false> => {
     try {
-        const updatedImpressora = await prisma.impressora.update({
+        const updatedImpressora = await impressoraClient.update({
             where: { id: id },
             data: data as Prisma.ImpressoraUpdateInput,
         });
@@ -193,7 +194,7 @@ export const updateImpressora = async (id: number, data: Partial<Impressora>): P
 
 export const deleteImpressora = async (id: number): Promise<Impressora | false> => {
     try {
-        const impressora = await prisma.impressora.update({
+        const impressora = await impressoraClient.update({
             where: { id },
             data: { ativo: false },
         });
@@ -206,7 +207,7 @@ export const deleteImpressora = async (id: number): Promise<Impressora | false> 
 
 export const updateContadores = async (id: number, contadores: Partial<Impressora>): Promise<Impressora | false> => {
     try {
-        const updatedImpressora = await prisma.impressora.update({
+        const updatedImpressora = await impressoraClient.update({
             where: { id },
             data: contadores as Prisma.ImpressoraUpdateInput,
         });
@@ -219,7 +220,7 @@ export const updateContadores = async (id: number, contadores: Partial<Impressor
 
 export const getFiltroOpcoes = async (): Promise<{ cidades: string[], regionais: string[], unidades: string[], periodos: string[] }> => {
     try {
-        const impressoras = await prisma.impressora.findMany({
+        const impressoras = await impressoraClient.findMany({
             select: {
                 localizacao: true,
                 dataContador: true,
@@ -272,7 +273,7 @@ export const getDashboardData = async (): Promise<{
         const pbModelIds = await getPrinterModelIdsByColor(false);
 
         // Busca todas as impressoras
-        const impressoras = await prisma.impressora.findMany({
+        const impressoras = await impressoraClient.findMany({
             select: {
                 localizacao: true,
                 dataContador: true,

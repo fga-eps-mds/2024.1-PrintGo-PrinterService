@@ -2,10 +2,11 @@ import { PrismaClient } from "@prisma/client";
 import { Padrao } from '../types/Padrao.type'
 
 const prisma = new PrismaClient();
+const padraoClient = new PrismaClient().padrao;
 
 export const listPadroes = async (): Promise<Padrao[] | false> => {
     try {
-        const padroes = await prisma.padrao.findMany({
+        const padroes = await padraoClient.findMany({
             select: {
                 id: true,                 
                 marca: true,                
@@ -32,7 +33,7 @@ export const listPadroes = async (): Promise<Padrao[] | false> => {
 
 export const getById = async (id: number): Promise<Padrao | false> => {
     try {
-        const padrao = await prisma.padrao.findUnique({
+        const padrao = await padraoClient.findUnique({
             where: { id }
         });
 
@@ -45,7 +46,7 @@ export const getById = async (id: number): Promise<Padrao | false> => {
 
 export const createPadrao  = async (padrao: Padrao): Promise<Padrao | false> => {
     try {
-        const newPadrao = await prisma.padrao.create({ data: padrao });
+        const newPadrao = await padraoClient.create({ data: padrao });
         return newPadrao;
     } catch (error) {
         console.error("Erro ao criar padrão de impressora", error);
@@ -55,7 +56,7 @@ export const createPadrao  = async (padrao: Padrao): Promise<Padrao | false> => 
 
 export const editPadrao = async (id: number, padrao: Padrao): Promise<Padrao | false> => {
     try {
-        const updatedPadrao = await prisma.padrao.update({
+        const updatedPadrao = await padraoClient.update({
             where: { id },
             data: { id, ...padrao }
         });
@@ -68,7 +69,7 @@ export const editPadrao = async (id: number, padrao: Padrao): Promise<Padrao | f
 
 export const desativarPadrao = async (id: number): Promise<Padrao | false> => {
     try {
-        return await prisma.padrao.update({
+        return await padraoClient.update({
             where: { id },
             data: { ativo: false }
         });
@@ -80,7 +81,7 @@ export const desativarPadrao = async (id: number): Promise<Padrao | false> => {
 
 export const togglePadrao = async (id: number, status: boolean): Promise<Padrao | false> => {
     try {
-        return await prisma.padrao.update({
+        return await padraoClient.update({
             where: { id },
             data: { ativo: !status }
         });
@@ -92,7 +93,7 @@ export const togglePadrao = async (id: number, status: boolean): Promise<Padrao 
 
 export const getPrinterModelIdsByColor = async (isColorido: boolean): Promise<string[]> => {
     try {
-        const modelIds = await prisma.padrao.findMany({
+        const modelIds = await padraoClient.findMany({
             where: {
                 colorido: isColorido,
             },
