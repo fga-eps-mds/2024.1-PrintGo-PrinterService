@@ -97,16 +97,16 @@ export const getPrinterModelIdsByColor = async (isColorido: boolean): Promise<st
                 colorido: isColorido,
             },
             select: {
-                modelo: true,
+                id: true,
             },
         });
 
         console.log(
             `IDs de modelos ${isColorido ? 'coloridos' : 'PB'} retornados:`,
-            modelIds.map((padrao) => padrao.modelo)
+            modelIds.map((padrao) => padrao.id)
         );
 
-        return modelIds.map((padrao) => padrao.modelo);
+        return modelIds.map((padrao) => padrao.id.toString());
     } catch (error) {
         console.error(
             `Erro ao buscar IDs de modelos ${isColorido ? 'coloridos' : 'PB'}:`,
