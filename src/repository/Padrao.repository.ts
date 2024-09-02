@@ -90,43 +90,30 @@ export const togglePadrao = async (id: number, status: boolean): Promise<Padrao 
     }
 };
 
-export const getColorPrinterModelIds = async (): Promise<string[]> => {
+export const getPrinterModelIdsByColor = async (isColorido: boolean): Promise<string[]> => {
     try {
-        const colorModelIds = await prisma.padrao.findMany({
+        const modelIds = await prisma.padrao.findMany({
             where: {
-                colorido: true,
+                colorido: isColorido,
             },
             select: {
-                modelo: true 
-            }
-        });
-
-        console.log('IDs de modelos coloridos retornados:', colorModelIds.map(padrao => padrao.modelo));
-
-        return colorModelIds.map(padrao => padrao.modelo);
-    } catch (error) {
-        console.error("Erro ao buscar IDs de modelos coloridos:", error);
-        throw new Error("Erro ao buscar IDs de modelos coloridos.");
-    }
-};
-
-export const getPbPrinterModelIds = async (): Promise<string[]> => {
-    try {
-        const pbModelIds = await prisma.padrao.findMany({
-            where: {
-                colorido: false, 
+                modelo: true,
             },
-            select: {
-                modelo: true 
-            }
         });
 
-        
-        console.log('IDs de modelos PB retornados:', pbModelIds.map(padrao => padrao.modelo));
+        console.log(
+            `IDs de modelos ${isColorido ? 'coloridos' : 'PB'} retornados:`,
+            modelIds.map((padrao) => padrao.modelo)
+        );
 
-        return pbModelIds.map(padrao => padrao.modelo); 
+        return modelIds.map((padrao) => padrao.modelo);
     } catch (error) {
-        console.error("Erro ao buscar modelos de impressoras preto e branco:", error);
-        throw new Error("Erro ao buscar modelos de impressoras preto e branco.");
+        console.error(
+            `Erro ao buscar IDs de modelos ${isColorido ? 'coloridos' : 'PB'}:`,
+            error
+        );
+        throw new Error(
+            `Erro ao buscar IDs de modelos ${isColorido ? 'coloridos' : 'PB'}.`
+        );
     }
 };

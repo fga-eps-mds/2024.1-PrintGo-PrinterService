@@ -2,8 +2,8 @@ import { request, Request, response, Response } from "express";
 import {
     getFiltroOpcoes,
     getDashboardData
-} from "../repository/dashboard.repository";
-import { getColorPrinterModelIds, getPbPrinterModelIds } from "../repository/Padrao.repository";
+} from "../repository/Impressora.repository";
+import { getPrinterModelIdsByColor } from "../repository/Padrao.repository"; 
 
 export default {
 
@@ -21,8 +21,8 @@ export default {
     async getDashboardData(request: Request, response: Response) {
         try {
             const dashboardData = await getDashboardData();
-            const colorModelIds = await getColorPrinterModelIds();
-            const pbModelIds = await getPbPrinterModelIds();
+            const colorModelIds = await getPrinterModelIdsByColor(true);
+            const pbModelIds = await getPrinterModelIdsByColor(false);
     
             return response.status(200).json({
                 ...dashboardData,
