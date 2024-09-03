@@ -19,7 +19,10 @@ export const generateReport = (impressora: Impressora): ReportData => {
     const reportPB: number = contadorAtualPB - relatorio.contadorPB;
     const reportCor: number = contadorAtualCor - relatorio.contadorCor;
     const reportLocation: string = `${localizacao.split(';')[0]}, ${localizacao.split(';')[1]} - ${localizacao.split(';')[2]}`;
-    const reportCurrentGrowth: number = (reportPB + reportCor) / (relatorio.contadorPB + relatorio.contadorCor) * 100;
+
+    const totalAnterior: number = (relatorio.contadorCor + relatorio.contadorPB)
+    const totalAtual: number = (reportPB + reportCor)
+    const reportCurrentGrowth: number = totalAnterior === 0 ? 0 : (totalAtual / totalAnterior) * 100
 
     return {
         lastReportDate: relatorio.ultimaAtualizacao,
