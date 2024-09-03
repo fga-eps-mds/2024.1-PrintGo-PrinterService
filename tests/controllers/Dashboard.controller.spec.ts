@@ -3,6 +3,12 @@ import express from 'express';
 import { prisma } from '../../src/database';
 import dashboardRoutes from '../../src/routes/dashboard.route';
 import * as dashboardRepository from '../../src/repository/Impressora.repository'; 
+import { server } from '../../src/server';
+
+function generateRandomSerialNumber() {
+    const randomNumber = Math.floor(Math.random() * 1000000000);
+    return `${randomNumber}`;
+}
 
 describe("Dashboard Controller", () => {
     const app = express();
@@ -10,15 +16,12 @@ describe("Dashboard Controller", () => {
     app.use('/dashboard', dashboardRoutes); 
 
     afterEach(async () => {
-        await prisma.relatorio.deleteMany({});
         await prisma.impressora.deleteMany({});
         await prisma.padrao.deleteMany({});
     });
 
-    function generateRandomSerialNumber() {
-        const randomNumber = Math.floor(Math.random() * 1000000000);
-        return `${randomNumber}`;
-    }
+
+
 
     const defaultPrinter = {
         modeloId: "modeloXYZ",
@@ -38,6 +41,7 @@ describe("Dashboard Controller", () => {
     };
     
     const defaultPadrao = {
+        id: 1,
         modelo: "Imprime Baixo 3000",
         marca: "Epston",
         colorido: false,
@@ -51,7 +55,7 @@ describe("Dashboard Controller", () => {
         oidTotalGeral: "1.3.6.1.2.1.43.10.2.1.4.1.4"
     }
 
-    describe("GET /dashboard/filtro-opcoes", () => {
+    describe("GET /filtro-opcoes", () => {
         it("should return the filter options", async () => {
             const printer1 = { ...defaultPrinter, numSerie: generateRandomSerialNumber(), dataContador: new Date('2024-08-01') };
             const printer2 = { ...defaultPrinter, numSerie: generateRandomSerialNumber(), dataContador: new Date('2024-07-01') };
@@ -72,32 +76,32 @@ describe("Dashboard Controller", () => {
         });
 
         it("should return 500 if there is an error fetching filter options", async () => {
-            // Mockando a função getFiltroOpcoes diretamente
+    
             const mockGetFiltroOpcoes = jest.spyOn(dashboardRepository, 'getFiltroOpcoes').mockImplementationOnce(() => {
                 throw new Error("Database Error");
             });
 
             const res = await request(app).get('/dashboard/filtro-opcoes');
 
-            // Verificar se o mock foi chamado
+
             expect(mockGetFiltroOpcoes).toHaveBeenCalled();
 
             expect(res.status).toBe(500);
             expect(res.body.message).toBe("Erro ao buscar opções de filtro.");
         });
     });
-    describe("GET /dashboard/dashboard-data", () => {
+    describe("GET /dashboard-data", () => {
         it("should return the dashboard data", async () => {
-            const padraoColor = { ...defaultPadrao, modelo: "colorModel", colorido: true };
-            const padraoPB = { ...defaultPadrao, modelo: "pbModel", colorido: false };
+            const padraoColor = { ...defaultPadrao, modelo: "colorModel", colorido: true, id:2 };
+            const padraoPB = { ...defaultPadrao, modelo: "pbModel"};
 
             await prisma.padrao.createMany({
                 data: [padraoColor, padraoPB],
             });
 
-            const printer1 = { ...defaultPrinter, numSerie: generateRandomSerialNumber(), modeloId: "colorModel" };
-            const printer2 = { ...defaultPrinter, numSerie: generateRandomSerialNumber(), modeloId: "pbModel" };
-            const printer3 = { ...defaultPrinter, numSerie: generateRandomSerialNumber(), modeloId: "pbModel" };
+            const printer1 = { ...defaultPrinter, numSerie: generateRandomSerialNumber(), modeloId: padraoColor.id.toString() };
+            const printer2 = { ...defaultPrinter, numSerie: generateRandomSerialNumber(), modeloId: padraoPB.id.toString() };
+            const printer3 = { ...defaultPrinter, numSerie: generateRandomSerialNumber(), modeloId: padraoPB.id.toString() };
 
             await prisma.impressora.createMany({
                 data: [printer1, printer2, printer3],
@@ -113,27 +117,27 @@ describe("Dashboard Controller", () => {
                         dataContador: null,
                         contadorAtualPB: 100,
                         contadorAtualCor: 50,
-                        modeloId: "colorModel"
+                        modeloId: padraoColor.id.toString(),
                     }),
                     expect.objectContaining({
                         localizacao: printer2.localizacao,
                         dataContador: null,
                         contadorAtualPB: 100,
                         contadorAtualCor: 50,
-                        modeloId: "pbModel"
+                        modeloId: padraoPB.id.toString(),
                     }),
                     expect.objectContaining({
                         localizacao: printer3.localizacao,
                         dataContador: null,
                         contadorAtualPB: 100,
                         contadorAtualCor: 50,
-                        modeloId: "pbModel"
-                    })
+                        modeloId: padraoPB.id.toString(), 
+                    }),
                 ]),
                 totalColorPrinters: 1,
                 totalPbPrinters: 2,
-                colorModelIds: ["colorModel"],
-                pbModelIds: ["pbModel"]
+                colorModelIds: [padraoColor.id.toString()],
+                pbModelIds: [padraoPB.id.toString()],
             });
         });
 
