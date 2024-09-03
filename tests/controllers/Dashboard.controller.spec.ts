@@ -15,7 +15,7 @@ describe("Dashboard Controller", () => {
     app.use(express.json());
     app.use('/dashboard', dashboardRoutes); 
 
-    afterEach(async () => {
+    beforeEach(async () => {
         await prisma.impressora.deleteMany({});
         await prisma.padrao.deleteMany({});
     });
