@@ -91,6 +91,7 @@ export const updateImpressoraValidator = Joi.object({
         return value;
     }),
     modeloId: Joi.string().optional(),
+    dataContador: Joi.date().iso().optional().allow(null)
 });
 
 export const updateContadoresValidator = Joi.object({
