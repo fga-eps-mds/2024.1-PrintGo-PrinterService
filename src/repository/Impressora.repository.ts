@@ -77,6 +77,19 @@ export const listImpressorasContract = async (contractId: string): Promise<Parti
                         contadorTotal: true,
                     },
                 },
+                relatorio: {
+                  select: {
+                    id: true,
+                    impressoraId: true,
+                    contadorPB: true,
+                    contadorPBDiff: true,
+                    contadorCor: true,
+                    contadorCorDiff: true,
+                    ultimoResultado: true,
+                    resultadoAtual: true,
+                    ultimaAtualizacao: true
+                  }
+                }
             },
         });
         return impressoras;
