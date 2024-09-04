@@ -7,7 +7,8 @@ import {
     deleteImpressora, 
     updateContadores, 
     listImpressorasLocalizacao,
-    getDashboardData 
+    getDashboardData, 
+    getFiltroOpcoes
 } from '../../src/repository/Impressora.repository';
 import { server } from '../../src/server';
 import { prisma } from '../../src/database';
@@ -208,4 +209,35 @@ describe('Impressora Service Integration Tests', () => {
         expect(result.totalColorPrinters).toBe(0);
         expect(result.totalPbPrinters).toBe(1);
     });
+
+    it('should return correct filter options from getFiltroOpcoes', async () => {
+        const impressora1 = await criaImpressora({
+            ...defaultPrinter,
+            numSerie: generateRandomSerialNumber(),
+            localizacao: "São Paulo;Regional A;Unidade 1",
+            dataContador: new Date("2024-08-01T10:00:00Z")
+        });
+
+        const impressora2 = await criaImpressora({
+            ...defaultPrinter,
+            numSerie: generateRandomSerialNumber(),
+            localizacao: "Rio de Janeiro;Regional B;Unidade 2",
+            dataContador: new Date("2024-09-01T10:00:00Z")
+        });
+
+        const impressora3 = await criaImpressora({
+            ...defaultPrinter,
+            numSerie: generateRandomSerialNumber(),
+            localizacao: "Belo Horizonte;Regional C;Unidade 3",
+            dataContador: new Date("2024-07-01T10:00:00Z")
+        });
+
+        const result = await getFiltroOpcoes();
+
+        expect(result.cidades).toEqual(expect.arrayContaining(["São Paulo", "Rio de Janeiro", "Belo Horizonte"]));
+        expect(result.regionais).toEqual(expect.arrayContaining(["Regional A", "Regional B", "Regional C"]));
+        expect(result.unidades).toEqual(expect.arrayContaining(["Unidade 1", "Unidade 2", "Unidade 3"]));
+        expect(result.periodos).toEqual(expect.arrayContaining(["2024-08", "2024-09", "2024-07"]));
+    });
+    
 });
