@@ -1,9 +1,10 @@
 import { PrismaClient, Prisma } from "@prisma/client";
-import { Impressora } from '../types/Impressora.type'
+import { Impressora } from '../types/Impressora.type';
 import { getLocalizacaoQuery } from "../utils/utils";
+import { getPrinterModelIdsByColor } from "./Padrao.repository";
 
-const impressoraClient = new PrismaClient().impressora;
 const prisma = new PrismaClient();
+const impressoraClient = new PrismaClient().impressora;
 
 export const listImpressoras = async (): Promise<Impressora[] | false> => {
     try {
@@ -22,7 +23,7 @@ export const listImpressorasLocalizacao = async (
     unidadeTodas: boolean = false
 ): Promise<Impressora[] | false> => {
 
-    const localizacaoQuery : string = getLocalizacaoQuery(localizacao, cidadeTodas, regionalTodas, unidadeTodas);
+    const localizacaoQuery: string = getLocalizacaoQuery(localizacao, cidadeTodas, regionalTodas, unidadeTodas);
 
     try {
         const impressoras = await impressoraClient.findMany({
@@ -36,7 +37,7 @@ export const listImpressorasLocalizacao = async (
         console.error("Erro ao procurar impressoras: ", error);
         return false;
     }
-}
+};
 
 export const listImpressorasRelatorio = async (): Promise<Impressora[] | false> => {
     try {
@@ -53,7 +54,7 @@ export const listImpressorasRelatorio = async (): Promise<Impressora[] | false> 
         console.error("Erro ao procurar impressoras: ", error);
         return false;
     }
-}
+};
 
 export const listImpressorasContract = async (contractId: string): Promise<Partial<Impressora>[] | false> => {
     try {
@@ -97,7 +98,7 @@ export const listImpressorasContract = async (contractId: string): Promise<Parti
         console.error("Erro ao procurar impressoras: ", error);
         return false;
     }
-}
+};
 
 export const findImpressora = async (id: number): Promise<Impressora | false> => {
     try {
@@ -150,7 +151,7 @@ export const createImpressora = async (impressoraDTO: Impressora): Promise<Impre
 
     try {
         return await prisma.$transaction(async (prisma) => {
-            const impressora = await prisma.impressora.create({
+            const impressora = await impressoraClient.create({
                 data: {
                     numContrato,
                     numSerie,
@@ -227,5 +228,91 @@ export const updateContadores = async (id: number, contadores: Partial<Impressor
     } catch (error) {
         console.error("Erro ao adicionar contadores:", error);
         return false;
+    }
+};
+
+export const getFiltroOpcoes = async (): Promise<{ cidades: string[], regionais: string[], unidades: string[], periodos: string[] }> => {
+    try {
+        const impressoras = await impressoraClient.findMany({
+            select: {
+                localizacao: true,
+                dataContador: true,
+            },
+        });
+
+        const cidades = new Set<string>();
+        const regionais = new Set<string>();
+        const unidades = new Set<string>();
+        const periodos = new Set<string>();
+
+        impressoras.forEach(impressora => {
+            const [cidade, regional, unidade] = impressora.localizacao.split(';');
+            if (cidade) cidades.add(cidade.trim());
+            if (regional) regionais.add(regional.trim());
+            if (unidade) unidades.add(unidade.trim());
+            if (impressora.dataContador) {
+                const periodo = impressora.dataContador.toISOString().slice(0, 7); 
+                periodos.add(periodo);
+            }
+        });
+
+        return {
+            cidades: Array.from(cidades),
+            regionais: Array.from(regionais),
+            unidades: Array.from(unidades),
+            periodos: Array.from(periodos).sort((a, b) => b.localeCompare(a)),
+        };
+    } catch (error) {
+        console.error("Erro ao buscar opções de filtro:", error);
+        throw new Error("Erro ao buscar opções de filtro.");
+    }
+
+
+};
+export const getDashboardData = async (): Promise<{
+    impressoras: {
+        localizacao: string;
+        dataContador: Date | null;
+        contadorAtualPB: number;
+        contadorAtualCor: number;
+        modeloId: string;
+    }[];
+    totalColorPrinters: number;
+    totalPbPrinters: number;
+}> => {
+    try {
+        // Obtém IDs de modelos coloridos e preto e branco
+        const colorModelIds = await getPrinterModelIdsByColor(true);
+        const pbModelIds = await getPrinterModelIdsByColor(false);
+
+        // Busca todas as impressoras
+        const impressoras = await impressoraClient.findMany({
+            select: {
+                localizacao: true,
+                dataContador: true,
+                contadorAtualPB: true,
+                contadorAtualCor: true,
+                modeloId: true,
+            }
+        });
+
+        // Contagem de impressoras coloridas
+        const totalColorPrinters = impressoras.filter(impressora => 
+            colorModelIds.includes(impressora.modeloId)
+        ).length;
+
+        // Contagem de impressoras PB
+        const totalPbPrinters = impressoras.filter(impressora => 
+            pbModelIds.includes(impressora.modeloId)
+        ).length;
+
+        return {
+            impressoras,
+            totalColorPrinters,
+            totalPbPrinters
+        };
+    } catch (error) {
+        console.error("Erro ao buscar os dados do dashboard:", error);
+        throw new Error("Erro ao buscar os dados do dashboard.");
     }
 };
