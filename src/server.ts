@@ -5,6 +5,7 @@ import padraoRoutes from './routes/padrao.route';
 import impressoraRoutes from './routes/impressora.route';
 import reportRoutes from './routes/report.route';
 import rotinaSnmpRoutes from './routes/rotinaSnmp.route';
+import dashboardRoutes from './routes/dashboard.route';
 
 // import locadoraRoutes from './routes/locadora.route';
 import { reportSchedule } from './usecases/report/schedule.report';
@@ -32,6 +33,7 @@ app.use('/report', reportRoutes);
 app.use('/padrao', padraoRoutes)
 app.use('/rotina', rotinaSnmpRoutes);
 app.use('/', impressoraRoutes);
+app.use('/dashboard', dashboardRoutes);
 
 const server = app.listen(PORT, () => {
     console.log(`Server is running ${PORT}`);

@@ -1,9 +1,19 @@
-import { listImpressoras, findImpressora, findImpressoraByNumSerie, createImpressora, updateImpressora, deleteImpressora, updateContadores, listImpressorasLocalizacao } from '../../src/repository/Impressora.repository';
-import request from 'supertest';
+import { 
+    listImpressoras,
+    findImpressora, 
+    findImpressoraByNumSerie, 
+    createImpressora, 
+    updateImpressora, 
+    deleteImpressora, 
+    updateContadores, 
+    listImpressorasLocalizacao,
+    getDashboardData, 
+    getFiltroOpcoes
+} from '../../src/repository/Impressora.repository';
 import { server } from '../../src/server';
 import { prisma } from '../../src/database';
-import { resolveSoa } from 'dns';
 import { Impressora } from '@prisma/client';
+import { getPrinterModelIdsByColor } from '../../src/repository/Padrao.repository';
 const snmp = require("net-snmp");
 
 function generateRandomSerialNumber() {
@@ -62,12 +72,13 @@ describe('Impressora Service Integration Tests', () => {
         await prisma.relatorio.deleteMany({});
         await prisma.impressora.deleteMany({});
         await prisma.padrao.deleteMany({});
+        jest.clearAllMocks();
     });
 
     const criaPadrao = async (modelo: string) => {
         const dadosPadrao = padraoExemplo;
         dadosPadrao.modelo = modelo;
-        await prisma.padrao.create({ data: dadosPadrao });
+        return await prisma.padrao.create({ data: dadosPadrao });
     };
 
     const criaImpressora = async (data) => {
@@ -186,4 +197,47 @@ describe('Impressora Service Integration Tests', () => {
         const resultArray = result as Impressora[];
         expect(resultArray.length).toBe(0);
     });
+
+    it('should return the correct dashboard data in getDashboardData', async () => {
+        const padrao = await criaPadrao("modelo1");
+        const impressoraData = {...defaultPrinter, modeloId: padrao.id.toString()};
+        const impressora = await criaImpressora(impressoraData);
+
+        const result = await getDashboardData();
+
+        expect(result.impressoras).toHaveLength(1);
+        expect(result.totalColorPrinters).toBe(0);
+        expect(result.totalPbPrinters).toBe(1);
+    });
+
+    it('should return correct filter options from getFiltroOpcoes', async () => {
+        const impressora1 = await criaImpressora({
+            ...defaultPrinter,
+            numSerie: generateRandomSerialNumber(),
+            localizacao: "São Paulo;Regional A;Unidade 1",
+            dataContador: new Date("2024-08-01T10:00:00Z")
+        });
+
+        const impressora2 = await criaImpressora({
+            ...defaultPrinter,
+            numSerie: generateRandomSerialNumber(),
+            localizacao: "Rio de Janeiro;Regional B;Unidade 2",
+            dataContador: new Date("2024-09-01T10:00:00Z")
+        });
+
+        const impressora3 = await criaImpressora({
+            ...defaultPrinter,
+            numSerie: generateRandomSerialNumber(),
+            localizacao: "Belo Horizonte;Regional C;Unidade 3",
+            dataContador: new Date("2024-07-01T10:00:00Z")
+        });
+
+        const result = await getFiltroOpcoes();
+
+        expect(result.cidades).toEqual(expect.arrayContaining(["São Paulo", "Rio de Janeiro", "Belo Horizonte"]));
+        expect(result.regionais).toEqual(expect.arrayContaining(["Regional A", "Regional B", "Regional C"]));
+        expect(result.unidades).toEqual(expect.arrayContaining(["Unidade 1", "Unidade 2", "Unidade 3"]));
+        expect(result.periodos).toEqual(expect.arrayContaining(["2024-08", "2024-09", "2024-07"]));
+    });
+    
 });
